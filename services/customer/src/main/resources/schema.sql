@@ -18,21 +18,14 @@ create table bazaar.address(
 	constraint fk_customerAddress foreign key (customerId) references bazaar.customer(id)
 );
 
-drop table if exists bazaar.cart cascade;
-create table bazaar.cart(
+
+drop table if exists bazaar.cart_item cascade;
+create table bazaar.cart_item(
 	id serial primary key,
 	customerId int,
-	lastUpdated date,
-	constraint fk_customerCart foreign key (customerId) references bazaar.customer(id)
-);
-
-drop table if exists bazaar.cartitem cascade;
-create table bazaar.cartItem(
-	id serial primary key,
-	cartId int,
 	productId int,
 	quantity int,
-	constraint fk_cartItems foreign key (cartId) references bazaar.cart(id)
+	constraint fk_cartItems foreign key (customerId) references bazaar.customer(id)
 );
 
 
