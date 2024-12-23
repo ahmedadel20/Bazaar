@@ -11,33 +11,33 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/customer")
 public class CustomerController {
 
     private final CustomerService service;
 
-    @PostMapping("/customer")
-    public ResponseEntity<String> create(@RequestBody @Valid CustomerRequest customerRequest) {
-        return ResponseEntity.ok(service.create(customerRequest));
+    @PostMapping()
+    public ResponseEntity<CustomerResponse> createCustomer(@RequestBody @Valid CustomerRequest customerRequest) {
+        return ResponseEntity.ok(service.createCustomer(customerRequest));
     }
 
-    @PutMapping("/customer")
-    public ResponseEntity<String> update(@RequestBody @Valid CustomerRequest customerRequest) {
-        return ResponseEntity.ok(service.update(customerRequest));
+    @GetMapping("/{customerId}")
+    public ResponseEntity<CustomerResponse> getSingleCustomer(@PathVariable Long customerId) {
+        return ResponseEntity.ok(service.getSingleCustomer(customerId));
     }
 
-    @GetMapping("/customer")
-    public ResponseEntity<CustomerResponse> findById(@RequestParam Long id) {
-        return ResponseEntity.ok(service.findById(id));
+    @GetMapping()
+    public ResponseEntity<Iterable<CustomerResponse>> findAllCustomers() {
+        return ResponseEntity.ok(service.getAllCustomers());
     }
 
-    @GetMapping("/customers")
-    public ResponseEntity<Iterable<CustomerResponse>> findAll() {
-        return ResponseEntity.ok(service.findAll());
+    @PutMapping()
+    public ResponseEntity<CustomerResponse> updateSingleCustomer(@RequestBody @Valid CustomerRequest customerRequest) {
+        return ResponseEntity.ok(service.updateCustomer(customerRequest));
     }
 
-    @DeleteMapping("customer")
-    public ResponseEntity<String> delete(@RequestParam Long id) {
-        return ResponseEntity.ok(service.delete(id));
+    @DeleteMapping("/{customerId}")
+    public ResponseEntity<String> deleteSingleCustomer(@PathVariable Long customerId) {
+        return ResponseEntity.ok(service.deleteCustomer(customerId));
     }
 }

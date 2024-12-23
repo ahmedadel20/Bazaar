@@ -1,61 +1,18 @@
 package org.bazaar.giza.customer.service;
 
-import io.micrometer.common.util.StringUtils;
-import lombok.RequiredArgsConstructor;
-
-import org.bazaar.giza.customer.dto.CustomerMapper;
-import org.bazaar.giza.customer.dto.CustomerRequest;
-import org.bazaar.giza.customer.dto.CustomerResponse;
-import org.bazaar.giza.customer.entity.Customer;
-import org.bazaar.giza.customer.repo.CustomerRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class CustomerService {
-    private final CustomerRepository repository;
-    private final CustomerMapper mapper;
+import org.bazaar.giza.customer.dto.CustomerRequest;
+import org.bazaar.giza.customer.dto.CustomerResponse;
 
-    public String create(CustomerRequest request) {
-        repository.save(mapper.toCustomer(request));
-        return "Customer created";
-    }
+public interface CustomerService {
+    CustomerResponse createCustomer(CustomerRequest request);
 
-    public String update(CustomerRequest request) {
-        var customer = repository.findById(request.id()).orElseThrow(); // need to add customException
-        mergerCustomer(request, customer);
-        repository.save(mapper.toCustomer(request));
-        return "Customer updated";
-    }
+    CustomerResponse getSingleCustomer(Long customerId);
 
-    private void mergerCustomer(CustomerRequest request, Customer customer) {
-        if (StringUtils.isNotEmpty(request.firstName())) {
-            customer.setFirstName(request.firstName());
-        }
-        if (StringUtils.isNotEmpty(request.lastName())) {
-            customer.setLastName(request.lastName());
-        }
-        if (StringUtils.isNotEmpty(request.email())) {
-            customer.setEmail(request.email());
-        }
-        // need to link and add validation
-    }
+    List<CustomerResponse> getAllCustomers();
 
-    public CustomerResponse findById(Long id) {
-        if (id == null) {
-            return null;
-        }
-        return mapper.toCustomerResponse(repository.findById(id).orElseThrow()); // replace with custom exception
-    }
+    CustomerResponse updateCustomer(CustomerRequest request);
 
-    public String delete(Long id) {
-        repository.deleteById(id);
-        return "Customer deleted";
-    }
-
-    public List<CustomerResponse> findAll() {
-        return repository.findAll().stream().map(mapper::toCustomerResponse).toList();
-    }
+    String deleteCustomer(Long customerId);
 }
