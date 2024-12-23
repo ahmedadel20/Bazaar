@@ -1,4 +1,4 @@
-package org.bazaar.giza.customer;
+package org.bazaar.giza.customer.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

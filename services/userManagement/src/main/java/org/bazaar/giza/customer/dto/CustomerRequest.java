@@ -1,4 +1,4 @@
-package org.bazaar.giza.customer;
+package org.bazaar.giza.customer.dto;
 
 public record CustomerRequest(Long id,
         String firstName,

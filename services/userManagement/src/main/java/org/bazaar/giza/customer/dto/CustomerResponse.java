@@ -1,4 +1,4 @@
-package org.bazaar.giza.customer;
+package org.bazaar.giza.customer.dto;
 
 import lombok.Builder;
 

@@ -1,5 +1,6 @@
-package org.bazaar.giza.customer;
+package org.bazaar.giza.customer.dto;
 
+import org.bazaar.giza.customer.entity.Customer;
 import org.springframework.stereotype.Service;
 
 @Service

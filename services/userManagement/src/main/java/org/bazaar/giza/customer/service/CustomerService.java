@@ -1,7 +1,13 @@
-package org.bazaar.giza.customer;
+package org.bazaar.giza.customer.service;
 
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
+
+import org.bazaar.giza.customer.dto.CustomerMapper;
+import org.bazaar.giza.customer.dto.CustomerRequest;
+import org.bazaar.giza.customer.dto.CustomerResponse;
+import org.bazaar.giza.customer.entity.Customer;
+import org.bazaar.giza.customer.repo.CustomerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

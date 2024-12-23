@@ -1,7 +1,11 @@
-package org.bazaar.giza.customer;
+package org.bazaar.giza.customer.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.bazaar.giza.customer.dto.CustomerRequest;
+import org.bazaar.giza.customer.dto.CustomerResponse;
+import org.bazaar.giza.customer.service.CustomerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
