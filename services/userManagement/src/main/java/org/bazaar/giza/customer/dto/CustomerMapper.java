@@ -1,5 +1,7 @@
 package org.bazaar.giza.customer.dto;
 
+import java.util.HashSet;
+
 import org.bazaar.giza.customer.entity.Customer;
 import org.springframework.stereotype.Service;
 
@@ -7,16 +9,17 @@ import org.springframework.stereotype.Service;
 public class CustomerMapper {
     public Customer toCustomer(CustomerRequest customerRequest) {
         return Customer.builder()
-                .id(customerRequest.id())
+                .userId(customerRequest.id())
                 .firstName(customerRequest.firstName())
                 .lastName(customerRequest.lastName())
                 .email(customerRequest.email())
+                .addresses(new HashSet<>())
                 .build();
     }
 
     public CustomerResponse toCustomerResponse(Customer customer) {
         return CustomerResponse.builder()
-                .id(customer.getId())
+                .id(customer.getUserId())
                 .firstName(customer.getFirstName())
                 .lastName(customer.getLastName())
                 .email(customer.getEmail())

@@ -1,27 +1,16 @@
 package org.bazaar.giza.customer.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Entity
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "address")
+@Embeddable
 public class Address {
-    @Id
-    private Long id;
-    @Column(name = "street")
     private String street;
-    @Column(name = "city")
     private String city;
-    @Column(name = "zip_code")
     private String zipCode;
 }
