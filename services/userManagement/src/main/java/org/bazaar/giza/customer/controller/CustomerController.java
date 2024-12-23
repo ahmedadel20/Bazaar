@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 public class CustomerController {
 
     private final CustomerService service;
+
     @PostMapping("/customer")
     public ResponseEntity<String> create(@RequestBody @Valid CustomerRequest customerRequest) {
         return ResponseEntity.ok(service.create(customerRequest));
