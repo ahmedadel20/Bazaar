@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -18,11 +17,11 @@ public class Product {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name="category_id")
-    private ProductCategory productCategory;
+    private Category productCategory;
 
     @Column(name="name")
     private String name;
@@ -31,10 +30,10 @@ public class Product {
     private Double price;
 
     @Column(name="quantity")
-    private Integer quantity;
+    private Long quantity;
 
     @Column(name="updated_at")
-    private Timestamp updatedAt;
+    private Timestamp lastUpdated;
 
     @Override
     public String toString() {
@@ -45,7 +44,7 @@ public class Product {
                         productCategory.getId(),
                         price,
                         quantity,
-                        new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(updatedAt)
+                        new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(lastUpdated)
                 );
     }
 }

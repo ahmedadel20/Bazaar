@@ -6,7 +6,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {
+		org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class}
+)
 public class InventoryApplication {
 
 	public static void main(String[] args) {
@@ -16,7 +18,7 @@ public class InventoryApplication {
 	@Bean
 	public CommandLineRunner myRunner(ProductService productService) {
 		return args -> {
-			productService.getProducts().forEach(a -> System.out.println(a));
+//			productService.getProducts().forEach(a -> System.out.println(a));
 		};
 	}
 }

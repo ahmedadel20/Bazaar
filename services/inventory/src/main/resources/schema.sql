@@ -1,4 +1,4 @@
-create schema if not exists bazaar;
+create schema if not exists bazaar AUTHORIZATION postgres;
 
 drop table if exists bazaar.product_categories cascade;
 create table bazaar.product_categories(
