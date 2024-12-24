@@ -13,6 +13,7 @@ public class CustomerMapper {
                 .firstName(customerRequest.firstName())
                 .lastName(customerRequest.lastName())
                 .email(customerRequest.email())
+                .phoneNumber(customerRequest.phoneNumber())
                 .addresses(new HashSet<>())
                 .build();
     }
@@ -23,6 +24,7 @@ public class CustomerMapper {
                 .firstName(customer.getFirstName())
                 .lastName(customer.getLastName())
                 .email(customer.getEmail())
+                .phoneNumber(customer.getPhoneNumber())
                 .build();
     }
 }
