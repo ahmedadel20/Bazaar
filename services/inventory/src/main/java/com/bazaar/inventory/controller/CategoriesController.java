@@ -29,17 +29,17 @@ public class CategoriesController {
 
     @PostMapping()
     public ResponseEntity<Object> createProduct(@RequestBody CategoryDTO categoryDto) {
-        return new ResponseEntity<>(categoryService.createCategory(categoryDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(categoryService.create(categoryDto), HttpStatus.CREATED);
     }
 
     @PutMapping()
     public ResponseEntity<Object> updateProduct(@RequestBody CategoryDTO categoryDto) {
-        return new ResponseEntity<>(categoryService.updateCategory(categoryDto), HttpStatus.OK);
+        return new ResponseEntity<>(categoryService.update(categoryDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<Object> deleteProduct(@PathVariable Long categoryId) {
-        categoryService.deleteCategory(categoryId);
+        categoryService.delete(categoryId);
         return new ResponseEntity<>("PRODUCT DELETED", HttpStatus.OK);
     }
 }
