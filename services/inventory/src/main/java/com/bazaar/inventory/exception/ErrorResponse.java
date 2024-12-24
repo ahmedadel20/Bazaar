@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 
 @Data
 @AllArgsConstructor
-public class CategoryErrorResponse {
+public class ErrorResponse {
     private HttpStatus httpStatus;
     private String message;
     private Timestamp timeStamp;

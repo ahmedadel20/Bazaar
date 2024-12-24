@@ -1,45 +1,73 @@
 package com.bazaar.inventory.controller;
 import com.bazaar.inventory.dto.CategoryDTO;
-import com.bazaar.inventory.service.CategoryService;
+import com.bazaar.inventory.dto.CategoryMapper;
+import com.bazaar.inventory.service.CategoryServiceImp;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/api/v1/categories")
 public class CategoriesController {
-    private CategoryService categoryService;
+    private CategoryServiceImp categoryService;
+    private CategoryMapper categoryMapper;
 
     @Autowired
-    public CategoriesController(CategoryService categoryService) {
+    public CategoriesController(CategoryServiceImp categoryService, CategoryMapper categoryMapper) {
         this.categoryService = categoryService;
+        this.categoryMapper = categoryMapper;
     }
 
     @GetMapping()
-    public ResponseEntity<Object> getCategories() {
-        return new ResponseEntity<>(categoryService.getAll(), HttpStatus.OK);
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public List<CategoryDTO> getCategories() {
+        return categoryService
+                .getAll()
+                .stream()
+                .map(category -> categoryMapper.toCategoryDTO(category))
+                .toList();
     }
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<Object> getCategoryById(@PathVariable Long categoryId) {
-        return new ResponseEntity<>(categoryService.getById(categoryId), HttpStatus.OK);
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryDTO getCategoryById(@PathVariable @Valid Long categoryId) {
+        return categoryMapper.toCategoryDTO(categoryService.getById(categoryId));
     }
 
     @PostMapping()
-    public ResponseEntity<Object> createProduct(@RequestBody CategoryDTO categoryDto) {
-        return new ResponseEntity<>(categoryService.create(categoryDto), HttpStatus.CREATED);
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryDTO createProduct(@RequestBody @Valid CategoryDTO categoryDto) {
+        return categoryMapper.toCategoryDTO(
+                categoryService.create(
+                        categoryMapper.toCategory(categoryDto)
+                )
+        );
     }
 
     @PutMapping()
-    public ResponseEntity<Object> updateProduct(@RequestBody CategoryDTO categoryDto) {
-        return new ResponseEntity<>(categoryService.update(categoryDto), HttpStatus.OK);
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryDTO updateProduct(@RequestBody CategoryDTO categoryDto) {
+        return categoryMapper.toCategoryDTO(
+                categoryService.update(
+                        categoryMapper.toCategory(categoryDto)
+                )
+        );
     }
 
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<Object> deleteProduct(@PathVariable Long categoryId) {
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public String deleteProduct(@PathVariable Long categoryId) {
         categoryService.delete(categoryId);
-        return new ResponseEntity<>("PRODUCT DELETED", HttpStatus.OK);
+        return "PRODUCT DELETED";
     }
 }

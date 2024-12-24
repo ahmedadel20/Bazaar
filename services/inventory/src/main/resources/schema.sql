@@ -3,7 +3,7 @@ create schema if not exists bazaar AUTHORIZATION postgres;
 drop table if exists bazaar.product_categories cascade;
 create table bazaar.product_categories(
 	id serial primary key,
-	name varchar(500)
+	name varchar(500) unique
 );
 
 

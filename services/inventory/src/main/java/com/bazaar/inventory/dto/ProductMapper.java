@@ -2,18 +2,22 @@ package com.bazaar.inventory.dto;
 
 import com.bazaar.inventory.entity.Category;
 import com.bazaar.inventory.entity.Product;
-import com.bazaar.inventory.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 @Component
 public class ProductMapper {
+    CategoryMapper categoryMapper;
+
+    @Autowired
+    public ProductMapper(CategoryMapper categoryMapper) {
+        this.categoryMapper = categoryMapper;
+    }
 
     public Product toProduct(ProductDTO productDto) {
         return new Product(
                 productDto.id(),
-                new Category(productDto.categoryId(), "UNKNOWN"),
+                categoryMapper.toCategory(productDto.categoryDto()),
                 productDto.name(),
                 productDto.price(),
                 productDto.quantity(),
@@ -21,10 +25,10 @@ public class ProductMapper {
         );
     }
 
-    public ProductDTO toDTO(Product product) {
+    public ProductDTO toProductDTO(Product product) {
         return new ProductDTO(
                 product.getId(),
-                product.getProductCategory().getId(),
+                categoryMapper.toCategoryDTO(product.getProductCategory()),
                 product.getName(),
                 product.getPrice(),
                 product.getQuantity(),

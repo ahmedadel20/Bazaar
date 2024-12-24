@@ -1,7 +1,9 @@
 package com.bazaar.inventory.dto;
 
+import jakarta.validation.constraints.NotNull;
+
 public record CategoryDTO (
-    Long id,
+    @NotNull Long id,
     String name
 )
 {
