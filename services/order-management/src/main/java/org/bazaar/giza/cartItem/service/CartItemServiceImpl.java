@@ -3,6 +3,7 @@ package org.bazaar.giza.cartItem.service;
 import lombok.RequiredArgsConstructor;
 import org.bazaar.giza.cartItem.dto.CartItemRequest;
 import org.bazaar.giza.cartItem.dto.CartItemResponse;
+import org.bazaar.giza.cartItem.exception.CartItemNotFoundException;
 import org.bazaar.giza.cartItem.mapper.CartItemMapper;
 import org.bazaar.giza.cartItem.repository.CartItemRepository;
 import org.springframework.stereotype.Service;
@@ -32,17 +33,21 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Transactional
     public String removeItem(Long cartItemId) {
-        cartItemRepository.deleteById(cartItemId); //add custom exception
+        if (!cartItemRepository.existsById(cartItemId)) {
+            throw new CartItemNotFoundException(cartItemId); // Handle item not found
+        }
+        cartItemRepository.deleteById(cartItemId);
         return "Item removed";
     }
 
-    public CartItemResponse getItem(Long cartItemId) {
-        return cartItemMapper.toCartItemResponse(cartItemRepository.findById(cartItemId).orElseThrow()); //add custom exception
-    }
-
+    @Transactional
     public String clearCart(Long bazaarUserId) {
         cartItemRepository.deleteAllByBazaarUserId(bazaarUserId);
         return "Cart cleared";
+    }
+
+    public CartItemResponse getItem(Long cartItemId) {
+        return cartItemMapper.toCartItemResponse(cartItemRepository.findById(cartItemId).orElseThrow(() -> new CartItemNotFoundException(cartItemId))); //add custom exception
     }
 
     public List<CartItemResponse> getCart(Long bazaarUserId) {
