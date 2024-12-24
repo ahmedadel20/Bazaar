@@ -27,4 +27,5 @@ public class BazaarUser {
     private String email;
     @Column(unique = true)
     private String phoneNumber;
+    private String password;
 }
