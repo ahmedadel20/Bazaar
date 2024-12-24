@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.bazaar.giza.order.dto.OrderRequest;
 import org.bazaar.giza.order.dto.OrderResponse;
 import org.bazaar.giza.order.service.OrderService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,24 +19,24 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderResponse> create(@RequestBody OrderRequest orderRequest) {
-        return ResponseEntity.ok().body(service.create(orderRequest));
+        return new ResponseEntity<>(service.create(orderRequest), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{orderId}")
     public ResponseEntity<String> delete(@PathVariable Long orderId) {
-        return ResponseEntity.ok().body(service.delete(orderId));
+        return new ResponseEntity<>(service.delete(orderId), HttpStatus.OK);
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<OrderResponse> findById(@PathVariable Long orderId) {
-        return ResponseEntity.ok().body(service.getById(orderId));
+    public ResponseEntity<OrderResponse> getById(@PathVariable Long orderId) {
+        return new ResponseEntity<>(service.getById(orderId), HttpStatus.FOUND);
     }
 
     @GetMapping
     public ResponseEntity<List<OrderResponse>> getAllByBazaarUserId() {
         Long bazaarUserId = getCurrentBazaarUserId();
 
-        return ResponseEntity.ok().body(service.getAllByBazaarUserId(bazaarUserId));
+        return new ResponseEntity<>(service.getAllByBazaarUserId(bazaarUserId), HttpStatus.FOUND);
     }
 
     private Long getCurrentBazaarUserId() {
