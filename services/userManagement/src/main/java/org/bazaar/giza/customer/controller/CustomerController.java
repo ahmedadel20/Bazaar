@@ -16,11 +16,6 @@ public class CustomerController {
 
     private final CustomerService service;
 
-    @PostMapping()
-    public ResponseEntity<CustomerResponse> createCustomer(@RequestBody @Valid CustomerRequest customerRequest) {
-        return ResponseEntity.ok(service.createCustomer(customerRequest));
-    }
-
     @GetMapping("/{customerId}")
     public ResponseEntity<CustomerResponse> getSingleCustomer(@PathVariable Long customerId) {
         return ResponseEntity.ok(service.getSingleCustomer(customerId));

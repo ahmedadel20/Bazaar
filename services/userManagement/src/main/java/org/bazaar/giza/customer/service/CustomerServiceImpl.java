@@ -18,9 +18,9 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository repository;
     private final CustomerMapper mapper;
 
-    public CustomerResponse createCustomer(CustomerRequest request) {
-        Customer customer = repository.save(mapper.toCustomer(request));
-        return mapper.toCustomerResponse(customer);
+    public Customer createCustomer(Customer customer) {
+        // FIXME: Add Validation
+        return repository.save(customer);
     }
 
     public CustomerResponse getSingleCustomer(Long id) {

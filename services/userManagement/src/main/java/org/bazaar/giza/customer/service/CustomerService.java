@@ -4,9 +4,10 @@ import java.util.List;
 
 import org.bazaar.giza.customer.dto.CustomerRequest;
 import org.bazaar.giza.customer.dto.CustomerResponse;
+import org.bazaar.giza.customer.entity.Customer;
 
 public interface CustomerService {
-    CustomerResponse createCustomer(CustomerRequest request);
+    Customer createCustomer(Customer customer);
 
     CustomerResponse getSingleCustomer(Long customerId);
 
