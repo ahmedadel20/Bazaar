@@ -11,10 +11,4 @@ public class ErrorResponse {
     private HttpStatus httpStatus;
     private String message;
     private Timestamp timeStamp;
-
-    public ErrorResponse(String message) {
-        this.httpStatus = HttpStatus.BAD_REQUEST;
-        this.message = message;
-        this.timeStamp = new Timestamp(System.currentTimeMillis());
-    }
 }
