@@ -11,17 +11,18 @@ import org.bazaar.giza.customer.entity.Customer;
 import org.bazaar.giza.customer.service.CustomerService;
 import org.bazaar.giza.user.entity.BazaarUser;
 import org.bazaar.giza.user.service.BazaarUserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @Service
-// FIXME: Add password Encryption
 public class UserRolesServiceImpl implements UserRolesService {
     private final UserRolesRepo repository;
     private final BazaarUserService bazaarUserService;
     private final CustomerService customerService;
+    private final PasswordEncoder encoder;
 
     @Override
     public UserRoles registerCustomer(UserRegisterationDTO userRegisterationDTO) {
@@ -30,7 +31,7 @@ public class UserRolesServiceImpl implements UserRolesService {
                 .lastName(userRegisterationDTO.lastName())
                 .email(userRegisterationDTO.email())
                 .phoneNumber(userRegisterationDTO.phoneNumber())
-                .password(userRegisterationDTO.password())
+                .password(encoder.encode(userRegisterationDTO.password()))
                 .addresses(new HashSet<>())
                 .build());
 
@@ -46,7 +47,7 @@ public class UserRolesServiceImpl implements UserRolesService {
     public UserRoles registerManager(UserRegisterationDTO userRegisterationDTO) {
         BazaarUser user = bazaarUserService.createUser(new BazaarUser(null, userRegisterationDTO.firstName(),
                 userRegisterationDTO.lastName(), userRegisterationDTO.email(), userRegisterationDTO.phoneNumber(),
-                userRegisterationDTO.password()));
+                encoder.encode(userRegisterationDTO.password())));
 
         Set<String> roles = new HashSet<>();
         roles.add(Roles.MANAGER);
@@ -60,8 +61,8 @@ public class UserRolesServiceImpl implements UserRolesService {
     public UserRoles registerAdmin(UserRegisterationDTO userRegisterationDTO) {
         BazaarUser user = bazaarUserService.createUser(new BazaarUser(null, userRegisterationDTO.firstName(),
                 userRegisterationDTO.lastName(), userRegisterationDTO.email(), userRegisterationDTO.phoneNumber(),
-                userRegisterationDTO.password()));
-                
+                encoder.encode(userRegisterationDTO.password())));
+
         Set<String> roles = new HashSet<>();
         roles.add(Roles.ADMIN);
 
