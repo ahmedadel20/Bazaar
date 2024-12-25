@@ -33,7 +33,7 @@ public class UserAccountServiceImpl implements UserAccountService {
             return "DECLINED: Incorrect username or password.";
         }
         UserAccount userAccount = userAccountOptional.get();
-        if (userAccount.getPassword() != userAccountRequest.password()) {
+        if (!userAccount.getPassword().equals(userAccountRequest.password())) {
             return "DECLINED: Incorrect username or password.";
         }
 
