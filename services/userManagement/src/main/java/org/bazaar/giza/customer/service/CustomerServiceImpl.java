@@ -3,14 +3,17 @@ package org.bazaar.giza.customer.service;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 
+import org.bazaar.giza.constant.ErrorMessage;
 import org.bazaar.giza.customer.dto.CustomerMapper;
 import org.bazaar.giza.customer.dto.CustomerRequest;
 import org.bazaar.giza.customer.dto.CustomerResponse;
 import org.bazaar.giza.customer.entity.Customer;
+import org.bazaar.giza.customer.exception.CustomerException;
 import org.bazaar.giza.customer.repo.CustomerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,9 +28,10 @@ public class CustomerServiceImpl implements CustomerService {
 
     public CustomerResponse getSingleCustomer(Long id) {
         if (id == null) {
-            return null;
+            throw new CustomerException(ErrorMessage.ID_CANNOT_BE_NULL);
         }
-        return mapper.toCustomerResponse(repository.findById(id).orElseThrow()); // replace with custom exception
+
+        return mapper.toCustomerResponse(searchId(id));
     }
 
     public List<CustomerResponse> getAllCustomers() {
@@ -35,14 +39,18 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     public CustomerResponse updateCustomer(CustomerRequest request) {
-        var customer = repository.findById(request.id()).orElseThrow(); // need to add customException
+        var customer = searchId(request.id());
         mergerCustomer(request, customer);
         customer = repository.save(mapper.toCustomer(request));
         return mapper.toCustomerResponse(customer);
     }
 
     public String deleteCustomer(Long id) {
-        repository.deleteById(id);
+        if (id == null) {
+            throw new CustomerException(ErrorMessage.ID_CANNOT_BE_NULL);
+        }
+
+        repository.delete(searchId(id));
         return "Customer deleted";
     }
 
@@ -57,6 +65,15 @@ public class CustomerServiceImpl implements CustomerService {
         if (StringUtils.isNotEmpty(request.email())) {
             customer.setEmail(request.email());
         }
-        // need to link and add validation
+        // FIXME: need to link and add validation
+    }
+
+    private Customer searchId(Long id) {
+        Optional<Customer> customerOptional = repository.findById(id);
+        if (customerOptional.isEmpty()) {
+            throw new CustomerException(ErrorMessage.CUSTOMER_ID_NOT_FOUND);
+        }
+
+        return customerOptional.get();
     }
 }
