@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.bazaar.giza.order.dto.OrderRequest;
 import org.bazaar.giza.order.dto.OrderResponse;
 import org.bazaar.giza.order.entity.Order;
-import org.bazaar.giza.order.exception.OrderEmptyException;
 import org.bazaar.giza.order.exception.OrderNotFoundException;
 import org.bazaar.giza.order.mapper.OrderMapper;
 import org.bazaar.giza.order.repository.OrderRepository;
@@ -39,12 +38,15 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findById(orderId).map(orderMapper::toOrderResponse).orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 
+//    public List<OrderResponse> getOrdersByStatus(Long bazaarUserId, String status) {
+//        return orderRepository.findAllByBazaarUserIdAndStatus(bazaarUserId, status)
+//                .stream()
+//                .map(orderMapper::toOrderResponse)
+//                .toList();
+//    }
+
     @Override
     public List<OrderResponse> getAllByBazaarUserId(Long bazaarUserId) {
-        var orders = orderRepository.findAllByBazaarUserId(bazaarUserId);
-        if (orders.isEmpty()) {
-            throw new OrderEmptyException(bazaarUserId);
-        }
         return orderRepository.findAllByBazaarUserId(bazaarUserId).stream().map(orderMapper::toOrderResponse).toList();
     }
 }
