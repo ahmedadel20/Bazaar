@@ -3,6 +3,7 @@ package org.bazaar.giza.exception;
 import org.bazaar.giza.cartItem.exception.CartItemNotFoundException;
 import org.bazaar.giza.cartItem.exception.InvalidQuantityException;
 import org.bazaar.giza.order.exception.OrderNotFoundException;
+import org.bazaar.giza.transaction.exception.TransactionNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,6 +27,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidQuantityException.class)
     public ResponseEntity<ErrorResponse> handleInvalidQuantityException(InvalidQuantityException ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(TransactionNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleTransactionNotFoundException(TransactionNotFoundException ex) {
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
