@@ -17,7 +17,6 @@ public class BazaarUserServiceImpl implements BazaarUserService {
 
     @Override
     public BazaarUser createUser(BazaarUser bazaarUser) {
-        bazaarUser.setUserId(null);
         boolean emailExists = bazaarUserRepo.findByEmail(bazaarUser.getEmail()).isPresent();
         boolean phoneExists = bazaarUserRepo.findByPhoneNumber(bazaarUser.getPhoneNumber()).isPresent();
         // Duplicate email or phone number are not allowed
@@ -35,10 +34,6 @@ public class BazaarUserServiceImpl implements BazaarUserService {
 
     @Override
     public BazaarUser getSingleUser(Long userId) {
-        if (userId == null) {
-            throw new BazaarUserException(ErrorMessage.ID_CANNOT_BE_NULL);
-        }
-
         return searchId(userId);
     }
 
@@ -54,6 +49,10 @@ public class BazaarUserServiceImpl implements BazaarUserService {
 
     // Helper Functions
     private BazaarUser searchId(Long id) {
+        if (id == null) {
+            throw new BazaarUserException(ErrorMessage.ID_CANNOT_BE_NULL);
+        }
+
         Optional<BazaarUser> bazaarUserOptional = bazaarUserRepo.findById(id);
         if (bazaarUserOptional.isEmpty()) {
             throw new BazaarUserException(ErrorMessage.USER_ID_NOT_FOUND);

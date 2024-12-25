@@ -1,6 +1,5 @@
 package org.bazaar.giza.customer.service;
 
-import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 
 import org.bazaar.giza.constant.ErrorMessage;
@@ -30,10 +29,6 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     public CustomerResponse getSingleCustomer(Long customerId) {
-        if (customerId == null) {
-            throw new CustomerException(ErrorMessage.ID_CANNOT_BE_NULL);
-        }
-
         return mapper.toCustomerResponse(searchId(customerId));
     }
 
@@ -59,35 +54,20 @@ public class CustomerServiceImpl implements CustomerService {
 
     public CustomerResponse updateCustomer(CustomerRequest request) {
         var customer = searchId(request.id());
-        mergerCustomer(request, customer);
         customer = repository.save(mapper.toCustomer(request));
         return mapper.toCustomerResponse(customer);
     }
 
     public String deleteCustomer(Long customerId) {
-        if (customerId == null) {
-            throw new CustomerException(ErrorMessage.ID_CANNOT_BE_NULL);
-        }
-
         repository.delete(searchId(customerId));
         return "Customer deleted";
     }
 
     // Helper Functions
-    private void mergerCustomer(CustomerRequest request, Customer customer) {
-        if (StringUtils.isNotEmpty(request.firstName())) {
-            customer.setFirstName(request.firstName());
-        }
-        if (StringUtils.isNotEmpty(request.lastName())) {
-            customer.setLastName(request.lastName());
-        }
-        if (StringUtils.isNotEmpty(request.email())) {
-            customer.setEmail(request.email());
-        }
-        // FIXME: need to link and add validation
-    }
-
     private Customer searchId(Long id) {
+        if (id == null) {
+            throw new CustomerException(ErrorMessage.ID_CANNOT_BE_NULL);
+        }
         Optional<Customer> customerOptional = repository.findById(id);
         if (customerOptional.isEmpty()) {
             throw new CustomerException(ErrorMessage.CUSTOMER_ID_NOT_FOUND);
