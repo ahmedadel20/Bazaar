@@ -4,6 +4,8 @@ import org.bazaar.giza.auth.dto.SignInRequestDTO;
 import org.bazaar.giza.auth.dto.UserRegisterationDTO;
 import org.bazaar.giza.auth.service.JwtService;
 import org.bazaar.giza.auth.service.UserRolesService;
+import org.bazaar.giza.constant.Roles;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,12 +28,15 @@ public class AuthController {
     }
 
     @PostMapping("/registerManager")
+    @PreAuthorize("hasAuthority('" + Roles.ADMIN + "') or " +
+            "(hasAuthority('" + Roles.MANAGER + "')")
     public String registerManager(@RequestBody UserRegisterationDTO dto) {
         userRolesService.registerManager(dto);
         return jwtService.authenticateAndGetToken(dto.email(), dto.password());
     }
 
     @PostMapping("/registerAdmin")
+    @PreAuthorize("hasAuthority('" + Roles.ADMIN + "')")
     public String registerAdmin(@RequestBody UserRegisterationDTO dto) {
         userRolesService.registerAdmin(dto);
         return jwtService.authenticateAndGetToken(dto.email(), dto.password());
