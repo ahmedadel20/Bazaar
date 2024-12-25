@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
+// FIXME: Improve Table generation for User Roles
 public class UserRoles {
     @Id
     private Long userId;

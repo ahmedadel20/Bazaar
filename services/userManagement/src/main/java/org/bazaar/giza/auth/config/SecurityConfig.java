@@ -39,7 +39,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/auth/generateToken",
+                        .requestMatchers("/api/v1/auth/generateToken", "/api/v1/auth/registerCustomer",
                                 "/swagger-ui/**", "/api-docs/**", "/h2-console/**", "/book/**")
                         .permitAll())
                 .authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())

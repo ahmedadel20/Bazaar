@@ -42,7 +42,7 @@ public class CustomerController {
         return ResponseEntity.ok(service.updateCustomer(customerRequest));
     }
 
-    @PutMapping("/{customerId}/addAdress")
+    @PutMapping("/{customerId}/addAddress")
     @PreAuthorize("hasAuthority('" + Roles.ADMIN + "') or " +
             "(hasAuthority('" + Roles.CUSTOMER + "') and #customerId == authentication.principal.id)")
     public ResponseEntity<Set<Address>> addAddress(@PathVariable Long customerId,
