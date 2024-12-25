@@ -15,28 +15,29 @@ import java.util.List;
 @RequestMapping("/api/v1/order")
 public class OrderController {
 
-    private final OrderService service;
+    private final OrderService orderService;
 
     @PostMapping
     public ResponseEntity<OrderResponse> create(@RequestBody OrderRequest orderRequest) {
-        return new ResponseEntity<>(service.create(orderRequest), HttpStatus.CREATED);
+        Long currentBazaarUserId = getCurrentBazaarUserId();
+        return new ResponseEntity<>(orderService.create(orderRequest), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{orderId}")
     public ResponseEntity<String> delete(@PathVariable Long orderId) {
-        return new ResponseEntity<>(service.delete(orderId), HttpStatus.OK);
+        return new ResponseEntity<>(orderService.delete(orderId), HttpStatus.OK);
     }
 
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponse> getById(@PathVariable Long orderId) {
-        return new ResponseEntity<>(service.getById(orderId), HttpStatus.FOUND);
+        return new ResponseEntity<>(orderService.getById(orderId), HttpStatus.FOUND);
     }
 
     @GetMapping
     public ResponseEntity<List<OrderResponse>> getAllByBazaarUserId() {
         Long bazaarUserId = getCurrentBazaarUserId();
 
-        return new ResponseEntity<>(service.getAllByBazaarUserId(bazaarUserId), HttpStatus.FOUND);
+        return new ResponseEntity<>(orderService.getAllByBazaarUserId(bazaarUserId), HttpStatus.FOUND);
     }
 
     private Long getCurrentBazaarUserId() {

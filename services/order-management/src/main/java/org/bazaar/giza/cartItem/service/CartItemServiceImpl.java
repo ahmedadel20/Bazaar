@@ -28,8 +28,25 @@ public class CartItemServiceImpl implements CartItemService {
         //    throw new IllegalArgumentException("Product not found.");  //add custom exception
         //}
 
-        var cartItem = cartItemRepository.save(cartItemMapper.toCartItem(request));
-        return cartItemMapper.toCartItemResponse(cartItem);
+        // Validate quantity
+        if (request.quantity() <= 0) {
+            throw new InvalidQuantityException("Quantity must be greater than zero.");
+        }
+
+        // Find existing item
+        var existingItem = cartItemRepository.findByBazaarUserIdAndProductId(
+                request.bazaarUserId(), request.productId());
+
+        if (existingItem.isPresent()) {
+            // Update quantity if product already exists
+            var cartItem = existingItem.get();
+            cartItem.setQuantity(cartItem.getQuantity() + request.quantity());
+            return cartItemMapper.toCartItemResponse(cartItemRepository.save(cartItem));
+        } else {
+            // Add new item if product does not exist
+            var cartItem = cartItemRepository.save(cartItemMapper.toCartItem(request));
+            return cartItemMapper.toCartItemResponse(cartItem);
+        }
     }
 
     @Transactional
@@ -63,28 +80,5 @@ public class CartItemServiceImpl implements CartItemService {
         cartItem.setQuantity(quantity);
         var updatedItem = cartItemRepository.save(cartItem);
         return cartItemMapper.toCartItemResponse(updatedItem);
-    }
-
-    @Transactional
-    public CartItemResponse addOrUpdateItem(CartItemRequest request) {
-        // Validate quantity
-        if (request.quantity() <= 0) {
-            throw new InvalidQuantityException("Quantity must be greater than zero.");
-        }
-
-        // Find existing item
-        var existingItem = cartItemRepository.findByBazaarUserIdAndProductId(
-                request.bazaarUserId(), request.productId());
-
-        if (existingItem.isPresent()) {
-            // Update quantity if product already exists
-            var cartItem = existingItem.get();
-            cartItem.setQuantity(cartItem.getQuantity() + request.quantity());
-            return cartItemMapper.toCartItemResponse(cartItemRepository.save(cartItem));
-        } else {
-            // Add new item if product does not exist
-            var cartItem = cartItemRepository.save(cartItemMapper.toCartItem(request));
-            return cartItemMapper.toCartItemResponse(cartItem);
-        }
     }
 }

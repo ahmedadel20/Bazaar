@@ -1,28 +1,37 @@
 package org.bazaar.giza.transaction.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bazaar.giza.transaction.exception.TransactionNotFoundException;
-import org.bazaar.giza.transaction.repository.TransactionRepository;
+import org.bazaar.giza.order.mapper.OrderMapper;
+import org.bazaar.giza.order.service.OrderService;
 import org.bazaar.giza.transaction.dto.TransactionRequest;
 import org.bazaar.giza.transaction.dto.TransactionResponse;
+import org.bazaar.giza.transaction.exception.TransactionNotFoundException;
 import org.bazaar.giza.transaction.mapper.TransactionMapper;
+import org.bazaar.giza.transaction.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService{
     private final TransactionRepository transactionRepository;
+    private final OrderService orderService;
     private final TransactionMapper transactionMapper;
+    private final OrderMapper orderMapper;
 
+    @Transactional
     @Override
     public TransactionResponse create(TransactionRequest request) {
-        return transactionMapper.toTransactionResponse(transactionRepository.save(transactionMapper.toTransaction(request)));
+        var transaction = transactionMapper.toTransaction(request);
+        transaction.setId(null);
+        var orderResponse = orderService.getById(request.orderId());
+        transaction.setOrder(orderMapper.toOrder(orderResponse));
+        return transactionMapper.toTransactionResponse(transactionRepository.save(transaction));
     }
 
+    @Transactional
     @Override
     public TransactionResponse update(TransactionRequest request) {
         // Check if transaction exists
@@ -37,6 +46,7 @@ public class TransactionServiceImpl implements TransactionService{
         return transactionMapper.toTransactionResponse(transactionRepository.save(existingTransaction));
     }
 
+    @Transactional
     @Override
     public String delete(Long transactionId) {
         // Check if transaction exists
@@ -47,13 +57,11 @@ public class TransactionServiceImpl implements TransactionService{
         return "Transaction removed successfully";
     }
 
-    @Transactional(readOnly = true)
     @Override
     public TransactionResponse getById(Long transactionId) {
         return transactionMapper.toTransactionResponse(transactionRepository.findById(transactionId).orElseThrow(() -> new TransactionNotFoundException(transactionId)));
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<TransactionResponse> getAll() {
         return transactionRepository.findAll().stream().map(transactionMapper::toTransactionResponse).toList();

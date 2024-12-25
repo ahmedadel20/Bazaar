@@ -5,8 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bazaar.giza.transaction.entity.Transaction;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -17,11 +20,15 @@ import java.util.Date;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     @Column(name = "bazaar_user_id", nullable = false)
-    Long bazaarUserId;
+    private Long bazaarUserId;
     @Column(name = "description", nullable = false)
-    String description;
+    private String description;
+    @Column(name = "final_price", nullable = false)
+    private BigDecimal finalPrice;
     @Column(name = "order_date", nullable = false)
-    Date orderDate;
+    private Date orderDate;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<Transaction> transactions;  // Add a field for transactions
 }

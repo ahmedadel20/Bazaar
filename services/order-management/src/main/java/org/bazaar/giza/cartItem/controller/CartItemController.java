@@ -38,12 +38,6 @@ public class CartItemController {
         return ResponseEntity.ok(cartItemService.updateItemQuantity(cartItemId, quantity));
     }
 
-    @PostMapping("/add-or-update")
-    public ResponseEntity<CartItemResponse> addOrUpdateItem(
-            @RequestBody CartItemRequest request) {
-        return ResponseEntity.ok(cartItemService.addOrUpdateItem(request));
-    }
-
     @GetMapping()
     public ResponseEntity<List<CartItemResponse>> getCart() {
         Long bazaarUserId = getCurrentBazaarUserId(); // Extract userId from JWT
