@@ -2,6 +2,7 @@ package org.bazaar.giza.customer.dto;
 
 import java.util.HashSet;
 
+import org.bazaar.giza.customer.entity.Address;
 import org.bazaar.giza.customer.entity.Customer;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,14 @@ public class CustomerMapper {
                 .build();
     }
 
+    public Address toAddress(AddressRequest addressRequest) {
+        return Address.builder()
+                .street(addressRequest.street())
+                .city(addressRequest.city())
+                .zipCode(addressRequest.zipCode())
+                .build();
+    }
+
     public CustomerResponse toCustomerResponse(Customer customer) {
         return CustomerResponse.builder()
                 .id(customer.getUserId())
@@ -25,6 +34,7 @@ public class CustomerMapper {
                 .lastName(customer.getLastName())
                 .email(customer.getEmail())
                 .phoneNumber(customer.getPhoneNumber())
+                .addresses(customer.getAddresses())
                 .build();
     }
 }

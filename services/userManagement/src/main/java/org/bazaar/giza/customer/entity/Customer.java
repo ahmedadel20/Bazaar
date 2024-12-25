@@ -18,4 +18,12 @@ import lombok.experimental.SuperBuilder;
 public class Customer extends BazaarUser {
     @ElementCollection
     private Set<Address> addresses;
+
+    public void addAddress(Address address) {
+        addresses.add(address);
+    }
+
+    public void removeAddress(Address address) {
+        addresses.remove(address);
+    }
 }
