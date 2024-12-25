@@ -4,7 +4,9 @@ import java.util.Optional;
 
 import org.bazaar.giza.auth.entity.UserInfoDetails;
 import org.bazaar.giza.auth.entity.UserRoles;
+import org.bazaar.giza.auth.exception.AuthException;
 import org.bazaar.giza.auth.repo.UserRolesRepo;
+import org.bazaar.giza.constant.ErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,8 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) {
         Optional<UserRoles> userDetail = repository.findByUser_Email(email);
 
-        // FIXME: Replace with custom exception
         return userDetail.map(UserInfoDetails::new)
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new AuthException(ErrorMessage.EMAIL_NOT_FOUND));
     }
 }

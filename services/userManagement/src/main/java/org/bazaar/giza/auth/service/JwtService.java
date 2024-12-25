@@ -6,11 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.bazaar.giza.auth.exception.AuthException;
+import org.bazaar.giza.constant.ErrorMessage;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
@@ -85,7 +86,7 @@ public class JwtService {
         if (authentication.isAuthenticated()) {
             return generateToken(username);
         } else {
-            throw new UsernameNotFoundException("Incorrect username or password.");
+            throw new AuthException(ErrorMessage.INCORRECT_EMAIL_OR_PASSWORD);
         }
     }
 }

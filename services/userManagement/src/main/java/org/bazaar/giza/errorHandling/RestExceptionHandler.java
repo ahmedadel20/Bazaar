@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.bazaar.giza.auth.exception.AuthException;
+import org.bazaar.giza.customer.exception.CustomerException;
 import org.bazaar.giza.user.exception.BazaarUserException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,7 +28,23 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BazaarUserException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ErrorResponse handleBackOfficeException(BazaarUserException ex) {
+    public ErrorResponse handleBazaarUserException(BazaarUserException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        return errorResponse;
+    }
+
+    @ExceptionHandler(CustomerException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handleCustomerException(CustomerException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        return errorResponse;
+    }
+
+    @ExceptionHandler(AuthException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handleAuthenticationException(AuthException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
         return errorResponse;
     }

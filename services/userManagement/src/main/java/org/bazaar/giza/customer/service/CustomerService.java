@@ -6,6 +6,7 @@ import org.bazaar.giza.customer.dto.CustomerRequest;
 import org.bazaar.giza.customer.dto.CustomerResponse;
 import org.bazaar.giza.customer.entity.Customer;
 
+// TODO: Add methods to add and remove addresses
 public interface CustomerService {
     Customer createCustomer(Customer customer);
 
