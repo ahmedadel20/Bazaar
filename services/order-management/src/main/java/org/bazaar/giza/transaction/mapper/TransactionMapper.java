@@ -6,7 +6,7 @@ import org.bazaar.giza.order.mapper.OrderMapper;
 import org.bazaar.giza.transaction.dto.TransactionRequest;
 import org.bazaar.giza.transaction.dto.TransactionResponse;
 import org.bazaar.giza.transaction.entity.Transaction;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 

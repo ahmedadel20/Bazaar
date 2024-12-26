@@ -3,7 +3,7 @@ package org.bazaar.giza.order.mapper;
 import org.bazaar.giza.order.dto.OrderRequest;
 import org.bazaar.giza.order.dto.OrderResponse;
 import org.bazaar.giza.order.entity.Order;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 

@@ -11,6 +11,7 @@ import org.bazaar.giza.order.exception.OrderNotFoundException;
 import org.bazaar.giza.order.mapper.OrderMapper;
 import org.bazaar.giza.order.repository.OrderRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
