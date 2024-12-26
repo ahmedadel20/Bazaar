@@ -1,6 +1,8 @@
 package com.bazaar.inventory.controller;
 
 import com.bazaar.inventory.exception.ErrorResponse;
+import com.bazaar.inventory.exception.CategoryDuplicateNameException;
+import com.bazaar.inventory.exception.CategoryInUseException;
 import com.bazaar.inventory.exception.CategoryNotFoundException;
 import com.bazaar.inventory.exception.ProductNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,28 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ErrorResponse handleCategoryNotFound(CategoryNotFoundException exc) {
         return new ErrorResponse(
                 HttpStatus.NOT_FOUND,
+                exc.getMessage(),
+                new Timestamp(System.currentTimeMillis())
+        );
+    }
+
+    @ExceptionHandler(CategoryDuplicateNameException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleCategoryDuplicateName(CategoryDuplicateNameException exc) {
+        return new ErrorResponse(
+                HttpStatus.CONFLICT,
+                exc.getMessage(),
+                new Timestamp(System.currentTimeMillis())
+        );
+    }
+
+    @ExceptionHandler(CategoryInUseException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleCategoryInUse(CategoryInUseException exc) {
+        return new ErrorResponse(
+                HttpStatus.CONFLICT,
                 exc.getMessage(),
                 new Timestamp(System.currentTimeMillis())
         );

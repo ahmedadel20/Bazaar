@@ -8,4 +8,5 @@ public class ErrorMessage {
     public final static String CATEGORY_ID_NOT_FOUND = "A category with the given id does not exist.";
     public final static String DUPLICATE_CATEGORY_ID = "A category with the given id number already exists.";
     public final static String DUPLICATE_CATEOGRY_NAME = "A category with the given name already exists.";
+    public final static String CATEGORY_IN_USE = "You can't delete a category used by products";
 }

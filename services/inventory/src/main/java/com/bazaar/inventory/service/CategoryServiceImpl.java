@@ -3,8 +3,11 @@ package com.bazaar.inventory.service;
 import com.bazaar.inventory.constant.ErrorMessage;
 import com.bazaar.inventory.entity.Category;
 import com.bazaar.inventory.exception.CategoryDuplicateNameException;
+import com.bazaar.inventory.exception.CategoryInUseException;
 import com.bazaar.inventory.exception.CategoryNotFoundException;
 import com.bazaar.inventory.repo.CategoryRepository;
+import com.bazaar.inventory.repo.ProductRepository;
+
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService{
     private CategoryRepository categoryRepo;
+    private ProductRepository productRepo;
 
     public List<Category> getAll() {
         return categoryRepo.findAll();
@@ -44,8 +48,11 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     public String delete(Long id) {
-        if (categoryRepo.findById(id).isEmpty())
+        Optional<Category> optionalCateogry = categoryRepo.findById(id);
+        if (optionalCateogry.isEmpty())
             throw new CategoryNotFoundException(ErrorMessage.CATEGORY_ID_NOT_FOUND);
+        if (productRepo.findByProductCategory(optionalCateogry.get()).size() > 0)
+            throw new CategoryInUseException(ErrorMessage.CATEGORY_IN_USE);
         categoryRepo.deleteById(id);
         return "CATEGORY DELETED";
     }

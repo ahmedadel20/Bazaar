@@ -9,5 +9,5 @@ public interface ProductService {
     Product getById(Long id);
     Product create(Product product);
     Product update(Product product);
-    void delete(Long id);
+    String delete(Long id);
 }
