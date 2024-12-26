@@ -21,7 +21,6 @@ public class TransactionServiceImpl implements TransactionService{
     private final TransactionMapper transactionMapper;
     private final OrderMapper orderMapper;
 
-    @Transactional
     @Override
     public TransactionResponse create(TransactionRequest request) {
         var transaction = transactionMapper.toTransaction(request);
@@ -31,7 +30,6 @@ public class TransactionServiceImpl implements TransactionService{
         return transactionMapper.toTransactionResponse(transactionRepository.save(transaction));
     }
 
-    @Transactional
     @Override
     public TransactionResponse update(TransactionRequest request) {
         // Check if transaction exists
@@ -46,7 +44,6 @@ public class TransactionServiceImpl implements TransactionService{
         return transactionMapper.toTransactionResponse(transactionRepository.save(existingTransaction));
     }
 
-    @Transactional
     @Override
     public String delete(Long transactionId) {
         // Check if transaction exists
