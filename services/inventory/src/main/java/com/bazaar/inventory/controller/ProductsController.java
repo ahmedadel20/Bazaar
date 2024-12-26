@@ -1,8 +1,10 @@
 package com.bazaar.inventory.controller;
 import com.bazaar.inventory.dto.ProductDTO;
 import com.bazaar.inventory.dto.ProductMapper;
-import com.bazaar.inventory.service.ProductServiceImp;
+import com.bazaar.inventory.service.ProductServiceImpl;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,15 +15,10 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/api/v1/products")
+@AllArgsConstructor
 public class ProductsController {
-    private ProductServiceImp productService;
+    private ProductServiceImpl productService;
     private ProductMapper productMapper;
-
-    @Autowired
-    public ProductsController (ProductServiceImp productService, ProductMapper productMapper) {
-        this.productService = productService;
-        this.productMapper = productMapper;
-    }
 
     @GetMapping()
     @ResponseBody

@@ -1,8 +1,10 @@
 package com.bazaar.inventory.controller;
 import com.bazaar.inventory.dto.CategoryDTO;
 import com.bazaar.inventory.dto.CategoryMapper;
-import com.bazaar.inventory.service.CategoryServiceImp;
+import com.bazaar.inventory.service.CategoryServiceImpl;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,15 +15,10 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/api/v1/categories")
+@AllArgsConstructor
 public class CategoriesController {
-    private CategoryServiceImp categoryService;
+    private CategoryServiceImpl categoryService;
     private CategoryMapper categoryMapper;
-
-    @Autowired
-    public CategoriesController(CategoryServiceImp categoryService, CategoryMapper categoryMapper) {
-        this.categoryService = categoryService;
-        this.categoryMapper = categoryMapper;
-    }
 
     @GetMapping()
     @ResponseBody
@@ -30,7 +27,7 @@ public class CategoriesController {
         return categoryService
                 .getAll()
                 .stream()
-                .map(category -> categoryMapper.toCategoryDTO(category))
+                .map(categoryMapper::toCategoryDTO)
                 .toList();
     }
 

@@ -1,6 +1,6 @@
 package com.bazaar.inventory;
 
-import com.bazaar.inventory.service.ProductServiceImp;
+import com.bazaar.inventory.service.ProductServiceImpl;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,7 +16,7 @@ public class InventoryApplication {
 	}
 
 	@Bean
-	public CommandLineRunner myRunner(ProductServiceImp productService) {
+	public CommandLineRunner myRunner(ProductServiceImpl productService) {
 		return args -> {
 //			productService.getProducts().forEach(a -> System.out.println(a));
 		};
