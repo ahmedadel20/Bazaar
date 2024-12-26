@@ -54,7 +54,6 @@ public class ProductsController {
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public String deleteProduct(@PathVariable Long productId) {
-        productService.delete(productId);
-        return "PRODUCT DELETED";
+        return productService.delete(productId);
     }
 }
