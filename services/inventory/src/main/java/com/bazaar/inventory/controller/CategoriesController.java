@@ -39,7 +39,7 @@ public class CategoriesController {
     @PostMapping()
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public CategoryDTO createProduct(@RequestBody @Valid CategoryDTO categoryDto) {
+    public CategoryDTO createCategory(@RequestBody @Valid CategoryDTO categoryDto) {
         return categoryMapper.toCategoryDTO(
                 categoryService.create(
                         categoryMapper.toCategory(categoryDto)
@@ -50,7 +50,7 @@ public class CategoriesController {
     @PutMapping()
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public CategoryDTO updateProduct(@RequestBody CategoryDTO categoryDto) {
+    public CategoryDTO updateCategory(@RequestBody CategoryDTO categoryDto) {
         return categoryMapper.toCategoryDTO(
                 categoryService.update(
                         categoryMapper.toCategory(categoryDto)
@@ -61,8 +61,7 @@ public class CategoriesController {
     @DeleteMapping("/{categoryId}")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public String deleteProduct(@PathVariable Long categoryId) {
-        categoryService.delete(categoryId);
-        return "PRODUCT DELETED";
+    public String deleteCategory(@PathVariable Long categoryId) {
+        return categoryService.delete(categoryId);
     }
 }
