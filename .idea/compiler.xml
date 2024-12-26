@@ -9,21 +9,25 @@
         <outputRelativeToContentRoot value="true" />
         <module name="product-catalogue" />
       </profile>
+      <profile name="Annotation profile for inventory" enabled="true">
       <profile name="Annotation profile for order-management" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <processorPath>
+        <processorPath useProcessorModulePath="true">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
         </processorPath>
+        <module name="inventory" />
         <module name="order-management" />
-        <module name="customer" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="customer" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="customer" options="-parameters" />
+      <module name="inventory" options="-parameters" />
       <module name="order-management" options="-parameters" />
       <module name="product-catalogue" options="" />
     </option>
