@@ -48,10 +48,11 @@ public class ProductServiceImpl implements ProductService{
         return productRepo.save(product);
     }
 
-    public void delete(Long productId) {
+    public String delete(Long productId) {
         if (productRepo.findById(productId).isEmpty())
             throw new ProductNotFoundException(ErrorMessage.PRODUCT_ID_NOT_FOUND);
         productRepo.deleteById(productId);
+        return "PRODUCT DELETED";
     }
 
 }
