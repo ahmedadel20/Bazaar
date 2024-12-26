@@ -1,4 +1,6 @@
 package com.bazaar.inventory.controller;
+import com.bazaar.inventory.dto.CategoryDTO;
+import com.bazaar.inventory.dto.CategoryMapper;
 import com.bazaar.inventory.dto.ProductDTO;
 import com.bazaar.inventory.dto.ProductMapper;
 import com.bazaar.inventory.service.ProductServiceImpl;
@@ -17,6 +19,7 @@ import java.util.List;
 public class ProductsController {
     private ProductServiceImpl productService;
     private ProductMapper productMapper;
+    private CategoryMapper categoryMapper;
 
     @GetMapping()
     @ResponseBody
@@ -34,6 +37,16 @@ public class ProductsController {
     @ResponseStatus(HttpStatus.OK)
     public ProductDTO getProductById(@PathVariable Long productId) {
         return productMapper.toProductDTO(productService.getById(productId));
+    }
+
+    @GetMapping("/bycategory")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public List<ProductDTO> getProductById(@RequestBody CategoryDTO categoryDto) {
+        return productService.getProductsByCategory(categoryMapper.toCategory(categoryDto))
+            .stream()
+            .map(productMapper::toProductDTO)
+            .toList();
     }
 
     @PostMapping()
