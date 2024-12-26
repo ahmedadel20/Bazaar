@@ -16,7 +16,8 @@ public class ProductMapper {
                 productDto.id(),
                 categoryMapper.toCategory(productDto.categoryDto()),
                 productDto.name(),
-                productDto.price(),
+                productDto.originalPrice(),
+                productDto.currentPrice(),
                 productDto.quantity(),
                 productDto.lastUpdated()
         );
@@ -27,7 +28,8 @@ public class ProductMapper {
                 product.getId(),
                 categoryMapper.toCategoryDTO(product.getProductCategory()),
                 product.getName(),
-                product.getPrice(),
+                product.getOriginalPrice(),
+                product.getCurrentPrice(),
                 product.getQuantity(),
                 product.getLastUpdated()
         );
