@@ -10,10 +10,18 @@
         <processorPath>
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
         </processorPath>
-        <module name="product-catalogue" />
         <module name="order-management" />
-        <module name="inventory" />
+        <module name="product-catalogue" />
         <module name="customer" />
+      </profile>
+      <profile name="Annotation profile for inventory" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath>
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
+        </processorPath>
+        <module name="inventory" />
       </profile>
     </annotationProcessing>
   </component>
