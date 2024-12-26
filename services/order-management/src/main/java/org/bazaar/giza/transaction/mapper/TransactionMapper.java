@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class TransactionMapper {
     private final OrderMapper orderMapper;
