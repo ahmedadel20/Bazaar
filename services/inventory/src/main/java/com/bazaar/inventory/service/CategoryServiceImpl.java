@@ -7,8 +7,6 @@ import com.bazaar.inventory.exception.CategoryInUseException;
 import com.bazaar.inventory.exception.CategoryNotFoundException;
 import com.bazaar.inventory.repo.CategoryRepository;
 import com.bazaar.inventory.repo.ProductRepository;
-
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
