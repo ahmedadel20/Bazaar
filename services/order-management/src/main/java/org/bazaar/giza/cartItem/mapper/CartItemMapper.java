@@ -4,9 +4,9 @@ import lombok.Builder;
 import org.bazaar.giza.cartItem.dto.CartItemRequest;
 import org.bazaar.giza.cartItem.dto.CartItemResponse;
 import org.bazaar.giza.cartItem.entity.CartItem;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 @Builder
 public class CartItemMapper {
     public CartItem toCartItem(CartItemRequest request) {

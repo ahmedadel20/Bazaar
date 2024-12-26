@@ -4,9 +4,10 @@
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
-        <option value="$PROJECT_DIR$/services/inventory/pom.xml" />
         <option value="$PROJECT_DIR$/services/product-catalogue/pom.xml~" />
         <option value="$PROJECT_DIR$/services/order-management/pom.xml" />
+        <option value="$PROJECT_DIR$/services/userManagement/pom.xml" />
+        <option value="$PROJECT_DIR$/services/inventory/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
