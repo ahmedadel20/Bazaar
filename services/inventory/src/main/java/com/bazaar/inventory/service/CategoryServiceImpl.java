@@ -28,7 +28,6 @@ public class CategoryServiceImpl implements CategoryService{
         return category.get();
     }
 
-    @Transactional
     public Category create(Category category) {
         category.setId(null);
         Optional<Category> categoryOptional = categoryRepo.findByName(category.getName());
@@ -38,18 +37,17 @@ public class CategoryServiceImpl implements CategoryService{
         return categoryRepo.save(category);
     }
 
-    @Transactional
     public Category update(Category category) {
         if (categoryRepo.findById(category.getId()).isEmpty())
             throw new CategoryNotFoundException(ErrorMessage.CATEGORY_ID_NOT_FOUND);
         return categoryRepo.save(category);
     }
 
-    @Transactional
-    public void delete(Long id) {
+    public String delete(Long id) {
         if (categoryRepo.findById(id).isEmpty())
             throw new CategoryNotFoundException(ErrorMessage.CATEGORY_ID_NOT_FOUND);
         categoryRepo.deleteById(id);
+        return "CATEGORY DELETED";
     }
 
 }
