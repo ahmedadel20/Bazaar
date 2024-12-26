@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 
-@Service
+@Component
 public class OrderMapper {
     public OrderResponse toOrderResponse(Order order) {
         return OrderResponse.builder()
