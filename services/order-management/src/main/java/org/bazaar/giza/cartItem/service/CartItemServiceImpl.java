@@ -1,12 +1,13 @@
 package org.bazaar.giza.cartItem.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bazaar.giza.cartItem.dto.CartItemRequest;
-import org.bazaar.giza.cartItem.dto.CartItemResponse;
+import org.bazaar.giza.cartItem.dto.*;
+import org.bazaar.giza.cartItem.entity.CartItem;
 import org.bazaar.giza.cartItem.exception.CartItemNotFoundException;
 import org.bazaar.giza.cartItem.exception.InvalidQuantityException;
 import org.bazaar.giza.cartItem.mapper.CartItemMapper;
 import org.bazaar.giza.cartItem.repository.CartItemRepository;
+import org.bazaar.giza.clients.InventoryClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,19 +19,15 @@ public class CartItemServiceImpl implements CartItemService {
 
     private final CartItemRepository cartItemRepository;
     private final CartItemMapper cartItemMapper;
-    //private final InventoryClient inventoryClient;
+    private final InventoryClient inventoryClient;
 
     @Transactional
     public CartItemResponse addItem(CartItemRequest request) {
-        //ProductResponse productResponse = inventoryClient.getProductById(request.productId());
-
-        //if (productResponse == null) { // Or check status
-        //    throw new IllegalArgumentException("Product not found.");  //add custom exception
-        //}
+        ProductDto productDTO = inventoryClient.getProductById(request.productId());
 
         // Validate quantity
         if (request.quantity() <= 0) {
-            throw new InvalidQuantityException("Quantity must be greater than zero.");
+            throw new InvalidQuantityException();
         }
 
         // Find existing item
@@ -41,10 +38,12 @@ public class CartItemServiceImpl implements CartItemService {
             // Update quantity if product already exists
             var cartItem = existingItem.get();
             cartItem.setQuantity(cartItem.getQuantity() + request.quantity());
+            cartItem.setCurrentPrice(productDTO.currentPrice());
             return cartItemMapper.toCartItemResponse(cartItemRepository.save(cartItem));
         } else {
             // Add new item if product does not exist
             var cartItem = cartItemRepository.save(cartItemMapper.toCartItem(request));
+            cartItem.setCurrentPrice(productDTO.currentPrice());
             return cartItemMapper.toCartItemResponse(cartItem);
         }
     }
@@ -62,8 +61,19 @@ public class CartItemServiceImpl implements CartItemService {
         return "Cart cleared";
     }
 
-    public CartItemResponse getItem(Long cartItemId) {
-        return cartItemMapper.toCartItemResponse(cartItemRepository.findById(cartItemId).orElseThrow(() -> new CartItemNotFoundException(cartItemId)));
+    public CartItemDto getItem(Long cartItemId) {
+        // Fetch the cart item from the database
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new CartItemNotFoundException(cartItemId));
+
+        // Fetch the product (including category) via Feign Client
+        ProductDto productDto = inventoryClient.getProductById(cartItem.getProductId());
+
+        // Map cart item entity to response DTO
+        CartItemResponse cartItemResponse = cartItemMapper.toCartItemResponse(cartItem);
+
+        // Build and return the final DTO using mapper
+        return cartItemMapper.toCartItemDto(cartItemResponse, productDto);
     }
 
     public List<CartItemResponse> getCart(Long bazaarUserId) {

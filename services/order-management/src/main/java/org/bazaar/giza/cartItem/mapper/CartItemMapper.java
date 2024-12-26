@@ -1,8 +1,7 @@
 package org.bazaar.giza.cartItem.mapper;
 
 import lombok.Builder;
-import org.bazaar.giza.cartItem.dto.CartItemRequest;
-import org.bazaar.giza.cartItem.dto.CartItemResponse;
+import org.bazaar.giza.cartItem.dto.*;
 import org.bazaar.giza.cartItem.entity.CartItem;
 import org.springframework.stereotype.Component;
 
@@ -28,4 +27,30 @@ public class CartItemMapper {
                 .currentPrice(cartItem.getCurrentPrice())
                 .build();
     }
+
+//    public CartItemDto toCartItemDto(CartItemResponse cartItemResponse, ProductDto productDto) {
+//        return CartItemDto.builder()
+//                .id(cartItemResponse.id())
+//                .bazaarUserId(cartItemResponse.bazaarUserId())
+//                .productDto(new ProductDto(
+//                        productDto.id(),
+//                        new CategoryDto(productDto.categoryDto().id(), productDto.categoryDto().name()), // Map category
+//                        productDto.name(),
+//                        productDto.currentPrice(), // Convert price to BigDecimal
+//                        productDto.quantity(),
+//                        productDto.lastUpdated()
+//                ))
+//                .quantity(cartItemResponse.quantity())
+//                .currentPrice(cartItemResponse.currentPrice())
+//                .build();
+//    }
+public CartItemDto toCartItemDto(CartItemResponse cartItemResponse, ProductDto productDto) {
+    return CartItemDto.builder()
+            .id(cartItemResponse.id())
+            .bazaarUserId(cartItemResponse.bazaarUserId())
+            .productDto(productDto) // Use Feign Client response directly
+            .quantity(cartItemResponse.quantity())
+            .currentPrice(cartItemResponse.currentPrice())
+            .build();
+}
 }

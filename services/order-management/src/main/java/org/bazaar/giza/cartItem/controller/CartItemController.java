@@ -1,6 +1,7 @@
 package org.bazaar.giza.cartItem.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.bazaar.giza.cartItem.dto.CartItemDto;
 import org.bazaar.giza.cartItem.dto.CartItemRequest;
 import org.bazaar.giza.cartItem.dto.CartItemResponse;
 import org.bazaar.giza.cartItem.service.CartItemServiceImpl;
@@ -27,7 +28,7 @@ public class CartItemController {
     }
 
     @GetMapping("/{cartItemId}")
-    public ResponseEntity<CartItemResponse> findById(@PathVariable Long cartItemId) {
+    public ResponseEntity<CartItemDto> findById(@PathVariable Long cartItemId) {
         return new ResponseEntity<>(cartItemService.getItem(cartItemId), HttpStatus.OK);
     }
 
@@ -40,7 +41,10 @@ public class CartItemController {
 
     @GetMapping()
     public ResponseEntity<List<CartItemResponse>> getCart() {
-        Long bazaarUserId = getCurrentBazaarUserId(); // Extract userId from JWT
+        //Long bazaarUserId = getCurrentBazaarUserId(); // Extract userId from JWT
+
+        //Only for testing
+        Long bazaarUserId = 101L;
         return new ResponseEntity<>(cartItemService.getCart(bazaarUserId), HttpStatus.OK);
     }
 
