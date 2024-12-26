@@ -24,6 +24,7 @@ public class OrderServiceImpl implements OrderService {
     private final CartItemService cartItemService;
 
     @Override
+    @Transactional
     public OrderResponse create(OrderRequest orderRequest) {
         if(orderRepository.findById(orderRequest.id()).isPresent()) {
             throw new DuplicateOrderException(orderRequest.id());
