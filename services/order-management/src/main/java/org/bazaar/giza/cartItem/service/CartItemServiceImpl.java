@@ -49,7 +49,6 @@ public class CartItemServiceImpl implements CartItemService {
         }
     }
 
-    @Transactional
     public String removeItem(Long cartItemId) {
         if (!cartItemRepository.existsById(cartItemId)) {
             throw new CartItemNotFoundException(cartItemId); // Handle item not found
@@ -58,7 +57,6 @@ public class CartItemServiceImpl implements CartItemService {
         return "Item removed";
     }
 
-    @Transactional
     public String clearCart(Long bazaarUserId) {
         cartItemRepository.deleteAllByBazaarUserId(bazaarUserId);
         return "Cart cleared";
@@ -72,7 +70,6 @@ public class CartItemServiceImpl implements CartItemService {
         return cartItemRepository.findAllByBazaarUserId(bazaarUserId).stream().map(cartItemMapper::toCartItemResponse).toList();
     }
 
-    @Transactional
     public CartItemResponse updateItemQuantity(Long cartItemId, int quantity) {
         var cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new CartItemNotFoundException(cartItemId));
