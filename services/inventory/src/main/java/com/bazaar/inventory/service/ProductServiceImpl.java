@@ -1,6 +1,7 @@
 package com.bazaar.inventory.service;
 
 import com.bazaar.inventory.constant.ErrorMessage;
+import com.bazaar.inventory.entity.Category;
 import com.bazaar.inventory.entity.Product;
 import com.bazaar.inventory.exception.ProductDuplicateIdException;
 import com.bazaar.inventory.exception.ProductNotFoundException;
@@ -16,10 +17,12 @@ public class ProductServiceImpl implements ProductService{
     private ProductRepository productRepo;
     private CategoryService categoryService;
 
+    @Override
     public List<Product> getAll() {
         return productRepo.findAll();
     }
 
+    @Override
     public Product getById(Long id) {
         var product = productRepo.findById(id);
         if (product.isEmpty())
@@ -27,6 +30,12 @@ public class ProductServiceImpl implements ProductService{
         return product.get();
     }
 
+    @Override
+    public List<Product> getProductsByCategory(Category category) {
+        return productRepo.findByProductCategory(category);
+    }
+
+    @Override
     public Product create(Product product) {
         product.setId(null);
         product.setProductCategory(categoryService.getById(product.getProductCategory().getId()));
@@ -41,6 +50,7 @@ public class ProductServiceImpl implements ProductService{
         return savedProduct;
     }
 
+    @Override
     public Product update(Product product) {
         if (productRepo.findById(product.getId()).isEmpty())
             throw new ProductNotFoundException(ErrorMessage.PRODUCT_ID_NOT_FOUND);
@@ -48,6 +58,7 @@ public class ProductServiceImpl implements ProductService{
         return productRepo.save(product);
     }
 
+    @Override
     public String delete(Long productId) {
         if (productRepo.findById(productId).isEmpty())
             throw new ProductNotFoundException(ErrorMessage.PRODUCT_ID_NOT_FOUND);
@@ -55,5 +66,4 @@ public class ProductServiceImpl implements ProductService{
         productRepo.deleteById(productId);
         return "PRODUCT DELETED";
     }
-
 }
