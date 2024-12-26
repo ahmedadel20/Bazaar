@@ -14,11 +14,4 @@ public class InventoryApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(InventoryApplication.class, args);
 	}
-
-	@Bean
-	public CommandLineRunner myRunner(ProductServiceImpl productService) {
-		return args -> {
-//			productService.getProducts().forEach(a -> System.out.println(a));
-		};
-	}
 }
