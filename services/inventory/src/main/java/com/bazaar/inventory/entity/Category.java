@@ -18,8 +18,4 @@ public class Category {
     @Column(name="name", unique = true)
     private String name;
 
-    @Override
-    public String toString() {
-        return "{%d, %s}".formatted(id, name);
-    }
 }

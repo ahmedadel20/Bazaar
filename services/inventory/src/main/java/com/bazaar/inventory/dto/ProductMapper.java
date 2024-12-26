@@ -1,18 +1,15 @@
 package com.bazaar.inventory.dto;
 
-import com.bazaar.inventory.entity.Category;
 import com.bazaar.inventory.entity.Product;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.AllArgsConstructor;
+
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
 public class ProductMapper {
     CategoryMapper categoryMapper;
-
-    @Autowired
-    public ProductMapper(CategoryMapper categoryMapper) {
-        this.categoryMapper = categoryMapper;
-    }
 
     public Product toProduct(ProductDTO productDto) {
         return new Product(

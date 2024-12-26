@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,16 +34,4 @@ public class Product {
     @Column(name="updated_at")
     private Timestamp lastUpdated;
 
-    @Override
-    public String toString() {
-        return "{%d, %s, %d, %.2f, %d, %s}"
-                .formatted(
-                        id,
-                        name,
-                        productCategory.getId(),
-                        price,
-                        quantity,
-                        new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(lastUpdated)
-                );
-    }
 }

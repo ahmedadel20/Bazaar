@@ -2,18 +2,16 @@ package com.bazaar.inventory.service;
 
 import com.bazaar.inventory.constant.ErrorMessage;
 import com.bazaar.inventory.entity.Category;
-import com.bazaar.inventory.exception.CategoryDuplicateIdException;
 import com.bazaar.inventory.exception.CategoryDuplicateNameException;
 import com.bazaar.inventory.exception.CategoryNotFoundException;
 import com.bazaar.inventory.repo.CategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService{
@@ -33,15 +31,11 @@ public class CategoryServiceImpl implements CategoryService{
     @Transactional
     public Category create(Category category) {
         category.setId(null);
-        Category savedCategory = null;
-        try {
-            savedCategory = categoryRepo.save(category);
-        } catch (Exception e) {
-            System.out.println(e);
-            System.out.println(e.getMessage());
+        Optional<Category> categoryOptional = categoryRepo.findByName(category.getName());
+        if (categoryOptional.isPresent()) {
             throw new CategoryDuplicateNameException(ErrorMessage.DUPLICATE_CATEOGRY_NAME);
         }
-        return savedCategory;
+        return categoryRepo.save(category);
     }
 
     @Transactional

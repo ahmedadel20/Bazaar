@@ -1,15 +1,11 @@
 package com.bazaar.inventory.service;
 
 import com.bazaar.inventory.constant.ErrorMessage;
-import com.bazaar.inventory.entity.Category;
 import com.bazaar.inventory.entity.Product;
 import com.bazaar.inventory.exception.ProductDuplicateIdException;
 import com.bazaar.inventory.exception.ProductNotFoundException;
 import com.bazaar.inventory.repo.ProductRepository;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -31,7 +27,6 @@ public class ProductServiceImpl implements ProductService{
         return product.get();
     }
 
-    @Transactional
     public Product create(Product product) {
         product.setId(null);
         product.setProductCategory(categoryService.getById(product.getProductCategory().getId()));
@@ -46,7 +41,6 @@ public class ProductServiceImpl implements ProductService{
         return savedProduct;
     }
 
-    @Transactional
     public Product update(Product product) {
         if (productRepo.findById(product.getId()).isEmpty())
             throw new ProductNotFoundException(ErrorMessage.PRODUCT_ID_NOT_FOUND);
@@ -54,7 +48,6 @@ public class ProductServiceImpl implements ProductService{
         return productRepo.save(product);
     }
 
-    @Transactional
     public void delete(Long productId) {
         if (productRepo.findById(productId).isEmpty())
             throw new ProductNotFoundException(ErrorMessage.PRODUCT_ID_NOT_FOUND);
