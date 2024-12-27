@@ -23,7 +23,7 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Transactional
     public CartItemResponse addItem(CartItemRequest request) {
-        ProductDto productDTO = inventoryClient.getProductById(request.productId());
+        ProductDto productDto = inventoryClient.getProductById(request.productId());
 
         // Validate quantity
         if (request.quantity() <= 0) {
@@ -38,13 +38,16 @@ public class CartItemServiceImpl implements CartItemService {
             // Update quantity if product already exists
             var cartItem = existingItem.get();
             cartItem.setQuantity(cartItem.getQuantity() + request.quantity());
-            cartItem.setCurrentPrice(productDTO.currentPrice());
-            return cartItemMapper.toCartItemResponse(cartItemRepository.save(cartItem));
+            cartItem.setCurrentPrice(productDto.currentPrice());
+            System.out.println("Product DTO Price: " + productDto.currentPrice());
+            return cartItemMapper.toCartItemResponse(cartItemRepository.save(cartItem), productDto);
         } else {
             // Add new item if product does not exist
             var cartItem = cartItemRepository.save(cartItemMapper.toCartItem(request));
-            cartItem.setCurrentPrice(productDTO.currentPrice());
-            return cartItemMapper.toCartItemResponse(cartItem);
+            cartItem.setCurrentPrice(productDto.currentPrice());
+            System.out.println("CartItem: " + cartItem.getCurrentPrice());
+            System.out.println("Product DTO Price: " + productDto.currentPrice());
+            return cartItemMapper.toCartItemResponse(cartItem, productDto);
         }
     }
 
@@ -61,7 +64,7 @@ public class CartItemServiceImpl implements CartItemService {
         return "Cart cleared";
     }
 
-    public CartItemDto getItem(Long cartItemId) {
+    public CartItemResponse getItem(Long cartItemId) {
         // Fetch the cart item from the database
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new CartItemNotFoundException(cartItemId));
@@ -69,15 +72,24 @@ public class CartItemServiceImpl implements CartItemService {
         // Fetch the product (including category) via Feign Client
         ProductDto productDto = inventoryClient.getProductById(cartItem.getProductId());
 
-        // Map cart item entity to response DTO
-        CartItemResponse cartItemResponse = cartItemMapper.toCartItemResponse(cartItem);
-
         // Build and return the final DTO using mapper
-        return cartItemMapper.toCartItemDto(cartItemResponse, productDto);
+        return cartItemMapper.toCartItemResponse(cartItem, productDto);
     }
 
     public List<CartItemResponse> getCart(Long bazaarUserId) {
-        return cartItemRepository.findAllByBazaarUserId(bazaarUserId).stream().map(cartItemMapper::toCartItemResponse).toList();
+        // Fetch all cart items for the user
+        List<CartItem> cartItems = cartItemRepository.findAllByBazaarUserId(bazaarUserId);
+
+        // Map each cart item to a response with product details
+        return cartItems.stream()
+                .map(cartItem -> {
+                    // Fetch product details using Feign Client
+                    ProductDto productDto = inventoryClient.getProductById(cartItem.getProductId());
+
+                    // Map to response DTO
+                    return cartItemMapper.toCartItemResponse(cartItem, productDto);
+                })
+                .toList(); // Collect as a list
     }
 
     public CartItemResponse updateItemQuantity(Long cartItemId, int quantity) {
@@ -85,7 +97,8 @@ public class CartItemServiceImpl implements CartItemService {
                 .orElseThrow(() -> new CartItemNotFoundException(cartItemId));
 
         cartItem.setQuantity(quantity);
+        ProductDto productDto = inventoryClient.getProductById(cartItem.getProductId());
         var updatedItem = cartItemRepository.save(cartItem);
-        return cartItemMapper.toCartItemResponse(updatedItem);
+        return cartItemMapper.toCartItemResponse(updatedItem, productDto);
     }
 }
