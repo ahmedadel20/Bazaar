@@ -6,8 +6,6 @@ import com.bazaar.inventory.dto.ProductMapper;
 import com.bazaar.inventory.service.ProductServiceImpl;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +21,6 @@ public class ProductsController {
 
     @GetMapping()
     @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
     public List<ProductDTO> getProducts() {
         return productService
                 .getAll()
@@ -34,14 +31,12 @@ public class ProductsController {
 
     @GetMapping("/{productId}")
     @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
     public ProductDTO getProductById(@PathVariable Long productId) {
         return productMapper.toProductDTO(productService.getById(productId));
     }
 
     @GetMapping("/bycategory")
     @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
     public List<ProductDTO> getProductById(@RequestBody CategoryDTO categoryDto) {
         return productService.getProductsByCategory(categoryMapper.toCategory(categoryDto))
             .stream()
@@ -49,23 +44,31 @@ public class ProductsController {
             .toList();
     }
 
+    @GetMapping("/listofproducts")
+    @ResponseBody
+    public List<ProductDTO> getListOfProducts(@RequestBody List<Long> productIds) {
+        return productService
+                .getProductsByIds(productIds)
+                .stream()
+                .map(product -> productMapper.toProductDTO(product))
+                .toList();
+        
+    }
+
     @PostMapping()
     @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
     public ProductDTO createProduct(@RequestBody @Valid ProductDTO productDto) {
         return productMapper.toProductDTO(productService.create(productMapper.toProduct(productDto)));
     }
 
     @PutMapping()
     @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
     public ProductDTO updateProduct(@RequestBody @Valid ProductDTO productDto) {
         return productMapper.toProductDTO(productService.update(productMapper.toProduct(productDto)));
     }
 
     @DeleteMapping("/{productId}")
     @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
     public String deleteProduct(@PathVariable Long productId) {
         return productService.delete(productId);
     }

@@ -36,6 +36,14 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
+    public List<Product> getProductsByIds(List<Long> productIds) {
+        List<Product> products = new ArrayList<>();
+        for (Long productId : productIds)
+            products.add(getById(productId));
+        return products;
+    }
+
+    @Override
     public Product create(Product product) {
         product.setId(null);
         product.setProductCategory(categoryService.getById(product.getProductCategory().getId()));
