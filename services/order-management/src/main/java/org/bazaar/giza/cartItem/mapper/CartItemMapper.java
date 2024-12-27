@@ -18,39 +18,13 @@ public class CartItemMapper {
                 .build();
     }
 
-    public CartItemResponse toCartItemResponse(CartItem cartItem) {
+    public CartItemResponse toCartItemResponse(CartItem cartItem, ProductDto productDto) {
         return CartItemResponse.builder()
                 .id(cartItem.getId())
                 .bazaarUserId(cartItem.getBazaarUserId())
-                .productId(cartItem.getProductId())
+                .productDto(productDto)
                 .quantity(cartItem.getQuantity())
                 .currentPrice(cartItem.getCurrentPrice())
                 .build();
     }
-
-//    public CartItemDto toCartItemDto(CartItemResponse cartItemResponse, ProductDto productDto) {
-//        return CartItemDto.builder()
-//                .id(cartItemResponse.id())
-//                .bazaarUserId(cartItemResponse.bazaarUserId())
-//                .productDto(new ProductDto(
-//                        productDto.id(),
-//                        new CategoryDto(productDto.categoryDto().id(), productDto.categoryDto().name()), // Map category
-//                        productDto.name(),
-//                        productDto.currentPrice(), // Convert price to BigDecimal
-//                        productDto.quantity(),
-//                        productDto.lastUpdated()
-//                ))
-//                .quantity(cartItemResponse.quantity())
-//                .currentPrice(cartItemResponse.currentPrice())
-//                .build();
-//    }
-public CartItemDto toCartItemDto(CartItemResponse cartItemResponse, ProductDto productDto) {
-    return CartItemDto.builder()
-            .id(cartItemResponse.id())
-            .bazaarUserId(cartItemResponse.bazaarUserId())
-            .productDto(productDto) // Use Feign Client response directly
-            .quantity(cartItemResponse.quantity())
-            .currentPrice(cartItemResponse.currentPrice())
-            .build();
-}
 }
