@@ -13,11 +13,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
-public class EmailService implements NotificationService {
+public class NotificationServiceImpl implements NotificationService {
 
     private final JavaMailSender emailSender;
     private final NotificationRepository notificationRepository;
@@ -25,28 +25,23 @@ public class EmailService implements NotificationService {
     @Value("${application.mail.sent.from}")
     private String fromEmail;
 
-    @RabbitListener(queues = "email_queue")
+    @RabbitListener(queues = "transaction_notification_queue")
     public void processEmailMessage(NotificationDto notificationDto) {
-        // Create notification with PENDING status
         Notification notification = Notification.builder()
                 .recipient(notificationDto.recipient())
                 .subject(notificationDto.subject())
-                .body(notificationDto.body()) // Use body directly
-                .sentAt(LocalDateTime.now())
-                .status(NotificationStatus.PENDING) // Start with PENDING status
+                .body(notificationDto.body())
+                .sentAt(Instant.now())
+                .status(NotificationStatus.PENDING)
                 .build();
 
         try {
             // Send email
             sendEmail(notificationDto.recipient(), notificationDto.subject(), notificationDto.body());
-
-            // Update status to SENT
             notification.setStatus(NotificationStatus.SENT);
         } catch (Exception e) {
-            // Update status to FAILED if email sending fails
             notification.setStatus(NotificationStatus.FAILED);
         } finally {
-            // Save the notification (always save whether SENT or FAILED)
             notificationRepository.save(notification);
         }
     }
@@ -57,7 +52,7 @@ public class EmailService implements NotificationService {
         helper.setTo(to);
         helper.setFrom(fromEmail);
         helper.setSubject(subject);
-        helper.setText(body, true); // HTML or plain text
+        helper.setText(body, true);
         emailSender.send(message);
     }
 }
