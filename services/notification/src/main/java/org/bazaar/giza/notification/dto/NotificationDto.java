@@ -1,13 +1,14 @@
 package org.bazaar.giza.notification.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Builder
 public record NotificationDto(
-        String recipient,
-        String subject,
-        String body,
-        LocalDateTime sentAt
+        @JsonProperty("recipient") String recipient,
+        @JsonProperty("subject") String subject,
+        @JsonProperty("body") String body,
+        @JsonProperty("sentAt") Instant sentAt
 ) {}

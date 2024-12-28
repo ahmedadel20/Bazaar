@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Builder
 @Entity
@@ -26,7 +26,7 @@ public class Notification {
     @Column(name = "body", nullable = false)
     private String body; // Email body (HTML/Text)
     @Column(name = "sent_at")
-    private LocalDateTime sentAt;
+    private Instant sentAt;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
