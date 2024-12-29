@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.bazaar.productCatalogue.sale.dto.SaleMapper;
+import org.bazaar.productCatalogue.constant.ErrorMessage;
 import org.bazaar.productCatalogue.sale.dto.SaleCreateRequest;
 import org.bazaar.productCatalogue.sale.dto.SaleResponse;
 import org.bazaar.productCatalogue.sale.dto.SaleUpdateRequest;
 import org.bazaar.productCatalogue.sale.entity.Sale;
+import org.bazaar.productCatalogue.sale.exception.SaleException;
 import org.bazaar.productCatalogue.sale.repo.SaleRepo;
 import org.springframework.stereotype.Service;
 
@@ -62,14 +64,12 @@ public class SaleServiceImpl implements SaleService {
     // Helper Functions
     private Sale searchId(Long id) {
         if (id == null) {
-            // FIXME: Replace with custom exception
-            throw new RuntimeException("id cannot be null.");
+            throw new SaleException(ErrorMessage.ID_CANNOT_BE_NULL);
         }
 
         Optional<Sale> saleOptional = repo.findById(id);
         if (saleOptional.isEmpty()) {
-            // FIXME: Replace with custom exception
-            throw new RuntimeException("sale id not found.");
+            throw new SaleException(ErrorMessage.SALE_ID_NOT_FOUND);
         }
         return saleOptional.get();
     }

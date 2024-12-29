@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.bazaar.productCatalogue.constant.ErrorMessage;
 import org.bazaar.productCatalogue.saleStatus.entity.SaleStatus;
+import org.bazaar.productCatalogue.saleStatus.exception.SaleStatusException;
 import org.bazaar.productCatalogue.saleStatus.repo.SaleStatusRepo;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +21,7 @@ public class SaleStatusServiceImpl implements SaleStatusService {
     public String getStatusFromId(int id) {
         Optional<SaleStatus> saleStatusOptional = repo.findById(id);
         if (saleStatusOptional.isEmpty()) {
-            // FIXME: Replace with custom exception
-            throw new RuntimeException();
+            throw new SaleStatusException(ErrorMessage.SALE_STATUS_ID_NOT_FOUND);
         }
 
         return saleStatusOptional.get().getSaleStatus().toString();
