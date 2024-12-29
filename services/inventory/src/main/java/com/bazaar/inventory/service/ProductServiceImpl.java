@@ -9,6 +9,7 @@ import com.bazaar.inventory.repo.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -73,6 +74,22 @@ public class ProductServiceImpl implements ProductService{
             throw new ProductNotFoundException(ErrorMessage.PRODUCT_ID_NOT_FOUND);
         product.setProductCategory(categoryService.getById(product.getProductCategory().getId()));
         return productRepo.save(product);
+    }
+
+    @Override
+    public String updateProductsPrices(List<Long> productIDs, Double discount) {
+        List<Product> products = getProductsByIds(productIDs);
+        products.forEach(
+                p -> {
+                    p.setCurrentPrice(
+                            p.getCurrentPrice()
+                            .divide(BigDecimal.valueOf(100))
+                            .multiply(BigDecimal.valueOf(100 - discount))
+                    );
+                    productRepo.save(p);
+                }
+        );
+        return "%.2f DISCOUNT APPLIED".formatted(discount);
     }
 
     @Override

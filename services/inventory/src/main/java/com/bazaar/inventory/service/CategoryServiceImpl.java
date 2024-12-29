@@ -19,10 +19,12 @@ public class CategoryServiceImpl implements CategoryService{
     private CategoryRepository categoryRepo;
     private ProductRepository productRepo;
 
+    @Override
     public List<Category> getAll() {
         return categoryRepo.findAll();
     }
 
+    @Override
     public Category getById(Long id) {
         var category = categoryRepo.findById(id);
         if (category.isEmpty())
@@ -38,6 +40,7 @@ public class CategoryServiceImpl implements CategoryService{
         return category.get();
     }
 
+    @Override
     public Category create(Category category) {
         category.setId(null);
         Optional<Category> categoryOptional = categoryRepo.findByName(category.getName());
@@ -47,12 +50,14 @@ public class CategoryServiceImpl implements CategoryService{
         return categoryRepo.save(category);
     }
 
+    @Override
     public Category update(Category category) {
         if (categoryRepo.findById(category.getId()).isEmpty())
             throw new CategoryNotFoundException(ErrorMessage.CATEGORY_ID_NOT_FOUND);
         return categoryRepo.save(category);
     }
 
+    @Override
     public String delete(Long id) {
         Optional<Category> optionalCateogry = categoryRepo.findById(id);
         if (optionalCateogry.isEmpty())
