@@ -36,9 +36,11 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public List<Product> getProductsByCategories(List<Category> categories) {
+    public List<Product> getProductsByCategories(List<Long> categoryIds) {
         List<Product> products = new ArrayList<>();
-        categories.forEach(c -> products.addAll(getProductsByCategory(c)));
+        categoryIds.forEach(
+                i -> products.addAll(getProductsByCategory(Category.builder().id(i).build()))
+        );
         return products;
     }
 

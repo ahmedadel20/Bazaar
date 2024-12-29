@@ -30,6 +30,14 @@ public class CategoryServiceImpl implements CategoryService{
         return category.get();
     }
 
+    @Override
+    public Category getByName(String name) {
+        var category = categoryRepo.findByName(name);
+        if (category.isEmpty())
+            throw new CategoryNotFoundException(ErrorMessage.CATEGORY_NAME_NOT_FOUND);
+        return category.get();
+    }
+
     public Category create(Category category) {
         category.setId(null);
         Optional<Category> categoryOptional = categoryRepo.findByName(category.getName());
@@ -49,7 +57,7 @@ public class CategoryServiceImpl implements CategoryService{
         Optional<Category> optionalCateogry = categoryRepo.findById(id);
         if (optionalCateogry.isEmpty())
             throw new CategoryNotFoundException(ErrorMessage.CATEGORY_ID_NOT_FOUND);
-        if (productRepo.findByProductCategory(optionalCateogry.get()).size() > 0)
+        if (!productRepo.findByProductCategory(optionalCateogry.get()).isEmpty())
             throw new CategoryInUseException(ErrorMessage.CATEGORY_IN_USE);
         categoryRepo.deleteById(id);
         return "CATEGORY DELETED";

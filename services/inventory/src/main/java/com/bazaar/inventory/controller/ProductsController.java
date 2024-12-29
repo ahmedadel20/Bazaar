@@ -37,14 +37,9 @@ public class ProductsController {
 
     @GetMapping("/bycategories")
     @ResponseBody
-    public List<ProductDTO> getProductById(@RequestBody List<CategoryDTO> categoryDTOs) {
+    public List<ProductDTO> getProductById(@RequestBody List<Long> categoryIds) {
         return productService
-                .getProductsByCategories(
-                    categoryDTOs
-                            .stream()
-                            .map(categoryMapper::toCategory)
-                            .toList()
-                )
+                .getProductsByCategories(categoryIds)
                 .stream()
                 .map(productMapper::toProductDTO)
                 .toList();
