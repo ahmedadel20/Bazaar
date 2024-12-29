@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.bazaar.productCatalogue.sale.dto.SaleMapper;
+import org.bazaar.productCatalogue.client.InventoryClient;
 import org.bazaar.productCatalogue.constant.ErrorMessage;
 import org.bazaar.productCatalogue.sale.dto.SaleCreateRequest;
 import org.bazaar.productCatalogue.sale.dto.SaleResponse;
@@ -20,6 +21,7 @@ import lombok.AllArgsConstructor;
 public class SaleServiceImpl implements SaleService {
     private final SaleRepo repo;
     private final SaleMapper mapper;
+    private final InventoryClient inventoryClient;
 
     @Override
     public SaleResponse createSale(SaleCreateRequest saleCreateRequest) {
@@ -27,10 +29,10 @@ public class SaleServiceImpl implements SaleService {
         sale.setId(null);
 
         /*
-         * TODO:
          * Send request to InventoryService to retrieve a list of product id's
          * associated with the categories given in sale request
          */
+        sale.setProductIds(inventoryClient.getProductById(saleCreateRequest.categories()));
 
         return mapper.toSaleResponse(repo.save(sale));
     }
