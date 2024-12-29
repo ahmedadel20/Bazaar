@@ -35,13 +35,19 @@ public class ProductsController {
         return productMapper.toProductDTO(productService.getById(productId));
     }
 
-    @GetMapping("/bycategory")
+    @GetMapping("/bycategories")
     @ResponseBody
-    public List<ProductDTO> getProductById(@RequestBody CategoryDTO categoryDto) {
-        return productService.getProductsByCategory(categoryMapper.toCategory(categoryDto))
-            .stream()
-            .map(productMapper::toProductDTO)
-            .toList();
+    public List<ProductDTO> getProductById(@RequestBody List<CategoryDTO> categoryDTOs) {
+        return productService
+                .getProductsByCategories(
+                    categoryDTOs
+                            .stream()
+                            .map(categoryMapper::toCategory)
+                            .toList()
+                )
+                .stream()
+                .map(productMapper::toProductDTO)
+                .toList();
     }
 
     @GetMapping("/listofproducts")
@@ -52,7 +58,6 @@ public class ProductsController {
                 .stream()
                 .map(product -> productMapper.toProductDTO(product))
                 .toList();
-        
     }
 
     @PostMapping()
