@@ -8,6 +8,7 @@ public class SaleMapper {
     public Sale toSale(SaleCreateRequest saleCreateRequest) {
         Sale sale = Sale.builder()
                 .name(saleCreateRequest.name())
+                .discountPercentage(saleCreateRequest.discountPercentage())
                 .startDate(saleCreateRequest.startDate())
                 .endDate(saleCreateRequest.endDate())
                 .build();

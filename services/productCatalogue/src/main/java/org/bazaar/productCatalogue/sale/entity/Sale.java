@@ -27,7 +27,9 @@ public class Sale {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String name;
+    private float discountPercentage;
     private Date startDate;
     private Date endDate;
     @ManyToOne

@@ -8,6 +8,6 @@ import org.bazaar.productCatalogue.saleStatus.entity.SaleStatus;
 import lombok.Builder;
 
 @Builder
-public record SaleResponse(Long id, String name, Date startDate, Date endDate, SaleStatus status,
-        List<Long> productIds) {
+public record SaleResponse(Long id, String name, float discountPercentage, Date startDate, Date endDate,
+        SaleStatus status, List<Long> productIds) {
 }

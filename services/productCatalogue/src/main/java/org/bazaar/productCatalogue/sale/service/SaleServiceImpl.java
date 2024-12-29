@@ -11,7 +11,6 @@ import org.bazaar.productCatalogue.constant.ErrorMessage;
 import org.bazaar.productCatalogue.enums.SaleStatusEnum;
 import org.bazaar.productCatalogue.sale.dto.SaleCreateRequest;
 import org.bazaar.productCatalogue.sale.dto.SaleResponse;
-import org.bazaar.productCatalogue.sale.dto.SaleUpdateRequest;
 import org.bazaar.productCatalogue.sale.entity.Sale;
 import org.bazaar.productCatalogue.sale.exception.SaleException;
 import org.bazaar.productCatalogue.sale.repo.SaleRepo;
@@ -53,13 +52,13 @@ public class SaleServiceImpl implements SaleService {
         return repo.findAll().stream().map(mapper::toSaleResponse).toList();
     }
 
-    @Override
-    public SaleResponse updateSaleDetails(SaleUpdateRequest saleUpdateRequest) {
-        Sale sale = searchId(saleUpdateRequest.id());
-        sale = mapper.toSale(saleUpdateRequest);
+    // @Override
+    // public SaleResponse updateSaleDetails(SaleUpdateRequest saleUpdateRequest) {
+    // Sale sale = searchId(saleUpdateRequest.id());
+    // sale = mapper.toSale(saleUpdateRequest);
 
-        return mapper.toSaleResponse(repo.save(sale));
-    }
+    // return mapper.toSaleResponse(repo.save(sale));
+    // }
 
     @Scheduled(cron = "0 1 0 * * ?") // 12:01 AM daily
     @Override
@@ -68,10 +67,9 @@ public class SaleServiceImpl implements SaleService {
         List<Sale> salesStartingToday = repo.findByStartDate(currentDate);
 
         for (Sale sale : salesStartingToday) {
-            if (sale.getStatus().getStatus().equals(SaleStatusEnum.INACTIVE)) {
-                sale.setStatus(saleStatusService.getSaleStatusFromStatus(SaleStatusEnum.ACTIVE));
-            }
-            repo.save(sale);
+            sale.setStatus(saleStatusService.getSaleStatusFromStatus(SaleStatusEnum.ACTIVE));
+            sale = repo.save(sale);
+            inventoryClient.updateProductPrices(sale.getProductIds(), sale.getDiscountPercentage());
         }
     }
 
@@ -82,10 +80,10 @@ public class SaleServiceImpl implements SaleService {
         List<Sale> salesEndingToday = repo.findByEndDate(currentDate);
 
         for (Sale sale : salesEndingToday) {
-            if (sale.getStatus().getStatus().equals(SaleStatusEnum.ACTIVE)) {
-                sale.setStatus(saleStatusService.getSaleStatusFromStatus(SaleStatusEnum.INACTIVE));
-            }
-            repo.save(sale);
+            sale.setStatus(saleStatusService.getSaleStatusFromStatus(SaleStatusEnum.INACTIVE));
+            sale = repo.save(sale);
+            // 100% percentage to disable sale
+            inventoryClient.updateProductPrices(sale.getProductIds(), 1.0f);
         }
     }
 
@@ -109,5 +107,4 @@ public class SaleServiceImpl implements SaleService {
         }
         return saleOptional.get();
     }
-
 }
