@@ -38,7 +38,7 @@ public class SaleServiceImpl implements SaleService {
          * Send request to InventoryService to retrieve a list of product id's
          * associated with the categories given in sale request
          */
-        sale.setProductIds(inventoryClient.getProductById(saleCreateRequest.categories()));
+        sale.setProductIds(inventoryClient.getProductById(saleCreateRequest.categoryIds()));
 
         return mapper.toSaleResponse(repo.save(sale));
     }
