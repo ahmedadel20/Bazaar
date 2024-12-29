@@ -40,7 +40,10 @@ public class CartItemController {
 
     @GetMapping()
     public ResponseEntity<List<CartItemResponse>> getCart() {
-        Long bazaarUserId = getCurrentBazaarUserId(); // Extract userId from JWT
+        //Long bazaarUserId = getCurrentBazaarUserId(); // Extract userId from JWT
+
+        //Only for testing
+        Long bazaarUserId = 1L;
         return new ResponseEntity<>(cartItemService.getCart(bazaarUserId), HttpStatus.OK);
     }
 

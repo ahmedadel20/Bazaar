@@ -1,8 +1,7 @@
 package org.bazaar.giza.cartItem.mapper;
 
 import lombok.Builder;
-import org.bazaar.giza.cartItem.dto.CartItemRequest;
-import org.bazaar.giza.cartItem.dto.CartItemResponse;
+import org.bazaar.giza.cartItem.dto.*;
 import org.bazaar.giza.cartItem.entity.CartItem;
 import org.springframework.stereotype.Component;
 
@@ -19,11 +18,11 @@ public class CartItemMapper {
                 .build();
     }
 
-    public CartItemResponse toCartItemResponse(CartItem cartItem) {
+    public CartItemResponse toCartItemResponse(CartItem cartItem, ProductDto productDto) {
         return CartItemResponse.builder()
                 .id(cartItem.getId())
                 .bazaarUserId(cartItem.getBazaarUserId())
-                .productId(cartItem.getProductId())
+                .productDto(productDto)
                 .quantity(cartItem.getQuantity())
                 .currentPrice(cartItem.getCurrentPrice())
                 .build();
