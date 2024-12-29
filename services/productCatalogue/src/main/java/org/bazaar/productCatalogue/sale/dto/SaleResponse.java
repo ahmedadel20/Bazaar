@@ -9,5 +9,5 @@ import lombok.Builder;
 
 @Builder
 public record SaleResponse(Long id, String name, float discountPercentage, Date startDate, Date endDate,
-        SaleStatus status, List<Long> productIds) {
+                SaleStatus status, List<SaleProduct> products) {
 }

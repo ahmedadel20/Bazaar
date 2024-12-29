@@ -2,6 +2,7 @@ package org.bazaar.productCatalogue.sale.service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,6 +10,8 @@ import org.bazaar.productCatalogue.sale.dto.SaleMapper;
 import org.bazaar.productCatalogue.client.InventoryClient;
 import org.bazaar.productCatalogue.constant.ErrorMessage;
 import org.bazaar.productCatalogue.enums.SaleStatusEnum;
+import org.bazaar.productCatalogue.sale.dto.PriceUpdateRequest;
+import org.bazaar.productCatalogue.sale.dto.ProductResponse;
 import org.bazaar.productCatalogue.sale.dto.SaleCreateRequest;
 import org.bazaar.productCatalogue.sale.dto.SaleResponse;
 import org.bazaar.productCatalogue.sale.entity.Sale;
@@ -37,19 +40,31 @@ public class SaleServiceImpl implements SaleService {
          * Send request to InventoryService to retrieve a list of product id's
          * associated with the categories given in sale request
          */
-        sale.setProductIds(inventoryClient.getProductById(saleCreateRequest.categoryIds()));
+        // FIXME: Have this end point also return the product DTOs
+        sale.setProductIds(inventoryClient.getProductsByCategories(saleCreateRequest.categoryIds()));
+        List<ProductResponse> productDtos = inventoryClient.getProductsById(sale.getProductIds());
 
-        return mapper.toSaleResponse(repo.save(sale));
+        return mapper.toSaleResponse(repo.save(sale), productDtos);
     }
 
     @Override
     public SaleResponse getSingleSale(Long id) {
-        return mapper.toSaleResponse(searchId(id));
+        Sale sale = searchId(id);
+        List<ProductResponse> productDtos = inventoryClient.getProductsById(sale.getProductIds());
+        return mapper.toSaleResponse(sale, productDtos);
     }
 
     @Override
     public List<SaleResponse> getAllSales() {
-        return repo.findAll().stream().map(mapper::toSaleResponse).toList();
+        List<SaleResponse> saleResponses = new ArrayList<>();
+        List<Sale> sales = repo.findAll();
+
+        for (Sale sale : sales) {
+            List<ProductResponse> productDtos = inventoryClient.getProductsById(sale.getProductIds());
+            saleResponses.add(mapper.toSaleResponse(sale, productDtos));
+        }
+
+        return saleResponses;
     }
 
     // @Override
@@ -69,7 +84,8 @@ public class SaleServiceImpl implements SaleService {
         for (Sale sale : salesStartingToday) {
             sale.setStatus(saleStatusService.getSaleStatusFromStatus(SaleStatusEnum.ACTIVE));
             sale = repo.save(sale);
-            inventoryClient.updateProductPrices(sale.getProductIds(), sale.getDiscountPercentage());
+            inventoryClient
+                    .updateProductPrices(new PriceUpdateRequest(sale.getProductIds(), sale.getDiscountPercentage()));
         }
     }
 
@@ -83,7 +99,7 @@ public class SaleServiceImpl implements SaleService {
             sale.setStatus(saleStatusService.getSaleStatusFromStatus(SaleStatusEnum.INACTIVE));
             sale = repo.save(sale);
             // 100% percentage to disable sale
-            inventoryClient.updateProductPrices(sale.getProductIds(), 1.0f);
+            inventoryClient.updateProductPrices(new PriceUpdateRequest(sale.getProductIds(), 1.0f));
         }
     }
 

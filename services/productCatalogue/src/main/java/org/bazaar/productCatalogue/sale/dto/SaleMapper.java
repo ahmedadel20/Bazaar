@@ -1,5 +1,8 @@
 package org.bazaar.productCatalogue.sale.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bazaar.productCatalogue.sale.entity.Sale;
 import org.springframework.stereotype.Component;
 
@@ -25,15 +28,32 @@ public class SaleMapper {
         return sale;
     }
 
-    public SaleResponse toSaleResponse(Sale sale) {
+    public SaleResponse toSaleResponse(Sale sale, List<ProductResponse> productDTO) {
         SaleResponse saleResponse = SaleResponse.builder()
                 .id(sale.getId())
                 .name(sale.getName())
                 .startDate(sale.getStartDate())
                 .endDate(sale.getEndDate())
                 .status(sale.getStatus())
-                .productIds(sale.getProductIds())
+                .products(toProductResponse(productDTO))
                 .build();
         return saleResponse;
+    }
+
+    public SaleProduct toProductResponse(ProductResponse productResponse) {
+        SaleProduct saleProduct = SaleProduct.builder()
+                .name(productResponse.name())
+                .category(productResponse.category())
+                .originalPrice(productResponse.price())
+                .build();
+
+        return saleProduct;
+    }
+
+    public List<SaleProduct> toProductResponse(List<ProductResponse> productResponses) {
+        List<SaleProduct> saleProducts = new ArrayList<>();
+        productResponses.stream().forEach(dto -> saleProducts.add(toProductResponse(dto)));
+
+        return saleProducts;
     }
 }
