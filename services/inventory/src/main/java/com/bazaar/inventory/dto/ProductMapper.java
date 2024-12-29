@@ -12,26 +12,28 @@ public class ProductMapper {
     CategoryMapper categoryMapper;
 
     public Product toProduct(ProductDTO productDto) {
-        return new Product(
-                productDto.id(),
-                categoryMapper.toCategory(productDto.categoryDto()),
-                productDto.name(),
-                productDto.originalPrice(),
-                productDto.currentPrice(),
-                productDto.quantity(),
-                productDto.lastUpdated()
-        );
+        return Product
+                .builder()
+                .id(productDto.id())
+                .productCategory(categoryMapper.toCategory(productDto.categoryDto()))
+                .name(productDto.name())
+                .originalPrice(productDto.originalPrice())
+                .currentPrice(productDto.currentPrice())
+                .quantity(productDto.quantity())
+                .lastUpdated(productDto.lastUpdated())
+                .build();
     }
 
     public ProductDTO toProductDTO(Product product) {
-        return new ProductDTO(
-                product.getId(),
-                categoryMapper.toCategoryDTO(product.getProductCategory()),
-                product.getName(),
-                product.getOriginalPrice(),
-                product.getCurrentPrice(),
-                product.getQuantity(),
-                product.getLastUpdated()
-        );
+        return ProductDTO
+                .builder()
+                .id(product.getId())
+                .categoryDto(categoryMapper.toCategoryDTO(product.getProductCategory()))
+                .name(product.getName())
+                .originalPrice(product.getOriginalPrice())
+                .currentPrice(product.getCurrentPrice())
+                .quantity(product.getQuantity())
+                .lastUpdated(product.getLastUpdated())
+                .build();
     }
 }

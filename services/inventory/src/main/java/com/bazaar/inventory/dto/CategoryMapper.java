@@ -6,10 +6,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class CategoryMapper {
     public Category toCategory(CategoryDTO categoryDto) {
-        return new Category(categoryDto.id(), categoryDto.name());
+        return Category
+                .builder()
+                .id(categoryDto.id())
+                .name(categoryDto.name())
+                .build();
     }
 
     public CategoryDTO toCategoryDTO(Category category) {
-        return new CategoryDTO(category.getId(), category.getName());
+        return CategoryDTO
+                .builder()
+                .id(category.getId())
+                .name(category.getName())
+                .build();
     }
 }
