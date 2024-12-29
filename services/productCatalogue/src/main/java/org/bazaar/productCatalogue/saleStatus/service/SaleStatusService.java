@@ -2,8 +2,13 @@ package org.bazaar.productCatalogue.saleStatus.service;
 
 import java.util.List;
 
-public interface SaleStatusService {
-    String getStatusFromId(int id);
+import org.bazaar.productCatalogue.enums.SaleStatusEnum;
+import org.bazaar.productCatalogue.saleStatus.entity.SaleStatus;
 
-    List<String> getAllStatuses();
+public interface SaleStatusService {
+    SaleStatus getSaleStatusFromId(int id);
+
+    SaleStatus getSaleStatusFromStatus(SaleStatusEnum status);
+
+    List<SaleStatus> getAllStatuses();
 }

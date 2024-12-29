@@ -15,5 +15,9 @@ public interface SaleService {
 
     SaleResponse updateSaleDetails(SaleUpdateRequest saleUpdateRequest);
 
+    void activateSales();
+
+    void deactivateSales();
+
     String deleteSale(Long id);
 }

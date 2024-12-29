@@ -1,17 +1,22 @@
 package org.bazaar.productCatalogue.sale.service;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.bazaar.productCatalogue.sale.dto.SaleMapper;
 import org.bazaar.productCatalogue.client.InventoryClient;
 import org.bazaar.productCatalogue.constant.ErrorMessage;
+import org.bazaar.productCatalogue.enums.SaleStatusEnum;
 import org.bazaar.productCatalogue.sale.dto.SaleCreateRequest;
 import org.bazaar.productCatalogue.sale.dto.SaleResponse;
 import org.bazaar.productCatalogue.sale.dto.SaleUpdateRequest;
 import org.bazaar.productCatalogue.sale.entity.Sale;
 import org.bazaar.productCatalogue.sale.exception.SaleException;
 import org.bazaar.productCatalogue.sale.repo.SaleRepo;
+import org.bazaar.productCatalogue.saleStatus.service.SaleStatusService;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
@@ -20,6 +25,7 @@ import lombok.AllArgsConstructor;
 @Service
 public class SaleServiceImpl implements SaleService {
     private final SaleRepo repo;
+    private final SaleStatusService saleStatusService;
     private final SaleMapper mapper;
     private final InventoryClient inventoryClient;
 
@@ -53,6 +59,34 @@ public class SaleServiceImpl implements SaleService {
         sale = mapper.toSale(saleUpdateRequest);
 
         return mapper.toSaleResponse(repo.save(sale));
+    }
+
+    @Scheduled(cron = "0 1 0 * * ?") // 12:01 AM daily
+    @Override
+    public void activateSales() {
+        Date currentDate = Date.valueOf(LocalDate.now());
+        List<Sale> salesStartingToday = repo.findByStartDate(currentDate);
+
+        for (Sale sale : salesStartingToday) {
+            if (sale.getStatus().getStatus().equals(SaleStatusEnum.INACTIVE)) {
+                sale.setStatus(saleStatusService.getSaleStatusFromStatus(SaleStatusEnum.ACTIVE));
+            }
+            repo.save(sale);
+        }
+    }
+
+    @Scheduled(cron = "0 59 23 * * ?") // 11:59 PM daily
+    @Override
+    public void deactivateSales() {
+        Date currentDate = Date.valueOf(LocalDate.now());
+        List<Sale> salesEndingToday = repo.findByEndDate(currentDate);
+
+        for (Sale sale : salesEndingToday) {
+            if (sale.getStatus().getStatus().equals(SaleStatusEnum.ACTIVE)) {
+                sale.setStatus(saleStatusService.getSaleStatusFromStatus(SaleStatusEnum.INACTIVE));
+            }
+            repo.save(sale);
+        }
     }
 
     @Override

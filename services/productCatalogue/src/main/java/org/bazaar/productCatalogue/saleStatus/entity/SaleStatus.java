@@ -20,5 +20,5 @@ public class SaleStatus {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private int id;
     @Enumerated(EnumType.STRING)
-    private SaleStatusEnum saleStatus;
+    private SaleStatusEnum status;
 }
