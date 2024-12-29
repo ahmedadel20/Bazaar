@@ -9,7 +9,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/api/v1/products")
@@ -65,6 +67,14 @@ public class ProductsController {
     @ResponseBody
     public ProductDTO updateProduct(@RequestBody @Valid ProductDTO productDto) {
         return productMapper.toProductDTO(productService.update(productMapper.toProduct(productDto)));
+    }
+
+    @PutMapping("/applydiscount")
+    @ResponseBody
+    public String updateProductsPrices(@RequestBody Map<String, Object> map) {
+        List<Long> productsIDs = ((List<Integer>) map.get("products")).stream().map(n -> Long.valueOf(n)).toList();
+        Double discount = (Double) map.get("discount");
+        return productService.updateProductsPrices(productsIDs, discount);
     }
 
     @DeleteMapping("/{productId}")
