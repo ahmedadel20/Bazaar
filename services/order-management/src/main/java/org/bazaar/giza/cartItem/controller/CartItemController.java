@@ -26,6 +26,11 @@ public class CartItemController {
         return new ResponseEntity<>(cartItemService.removeItem(cartItemId), HttpStatus.OK);
     }
 
+    @PostMapping("/{cartItemId}")
+    public CartItemResponse updateItem(@PathVariable Long cartItemId, @RequestBody CartItemRequest request) {
+        return cartItemService.updateItem(cartItemId, request);
+    }
+
     @GetMapping("/{cartItemId}")
     public ResponseEntity<CartItemResponse> findById(@PathVariable Long cartItemId) {
         return new ResponseEntity<>(cartItemService.getItem(cartItemId), HttpStatus.OK);
