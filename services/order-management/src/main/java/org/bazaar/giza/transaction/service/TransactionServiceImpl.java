@@ -3,14 +3,16 @@ package org.bazaar.giza.transaction.service;
 import lombok.RequiredArgsConstructor;
 import org.bazaar.giza.order.mapper.OrderMapper;
 import org.bazaar.giza.order.service.OrderService;
+import org.bazaar.giza.transaction.dto.NotificationDto;
 import org.bazaar.giza.transaction.dto.TransactionRequest;
 import org.bazaar.giza.transaction.dto.TransactionResponse;
 import org.bazaar.giza.transaction.exception.TransactionNotFoundException;
 import org.bazaar.giza.transaction.mapper.TransactionMapper;
 import org.bazaar.giza.transaction.repository.TransactionRepository;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -20,6 +22,7 @@ public class TransactionServiceImpl implements TransactionService{
     private final OrderService orderService;
     private final TransactionMapper transactionMapper;
     private final OrderMapper orderMapper;
+    private final RabbitTemplate rabbitTemplate;
 
     @Override
     public TransactionResponse create(TransactionRequest request) {
@@ -27,7 +30,21 @@ public class TransactionServiceImpl implements TransactionService{
         transaction.setId(null);
         var orderResponse = orderService.getById(request.orderId());
         transaction.setOrder(orderMapper.toOrder(orderResponse));
-        return transactionMapper.toTransactionResponse(transactionRepository.save(transaction));
+        var savedTransaction = transactionRepository.save(transaction);
+
+        NotificationDto notificationDto = NotificationDto.builder()
+
+                //TODO: get email from jwt token
+                .recipient("actualUser@gmail.com") // Replace with actual user email
+
+                .subject("Transaction Confirmation")
+                .body("Your transaction for order #" + request.orderId() + " is confirmed.")
+                .sentAt(Instant.now())
+                .build();
+
+        rabbitTemplate.convertAndSend("notification_exchange", "transaction.routing.key", notificationDto);
+
+        return transactionMapper.toTransactionResponse(savedTransaction);
     }
 
     @Override
