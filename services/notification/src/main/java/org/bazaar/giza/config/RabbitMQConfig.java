@@ -2,10 +2,7 @@ package org.bazaar.giza.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,42 +10,85 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
-    @Value("${rabbitmq.queue.transaction.name}")
-    private String transactionNotificationQueue;
 
-    @Value("${rabbitmq.exchange.transaction.name}")
-    private String transactionNotificationExchange;
+    @Value("${rabbitmq.exchange.notification}")
+    private String notificationExchange;
 
-    @Value("${rabbitmq.binding.transaction.name}")
-    private String transactionNotificationRoutingKey;
+    @Value("${rabbitmq.routing.transaction}")
+    private String transactionRoutingKey;
+
+    @Value("${rabbitmq.routing.cart}")
+    private String cartRoutingKey;
+
+    // Queues
+    @Value("${rabbitmq.queue.transaction}")
+    private String transactionQueue;
+
+    @Value("${rabbitmq.queue.cart}")
+    private String cartQueue;
+
+    @Value("${rabbitmq.queue.dlq}")
+    private String deadLetterQueue;
 
     @Bean
-    public Queue transactionNotificationQueue() {
-        return new Queue(transactionNotificationQueue);
+    public TopicExchange notificationExchange() {
+        return new TopicExchange(notificationExchange, true, false); // Durable, non-auto-delete
     }
 
     @Bean
-    public TopicExchange emailExchange() {
-        return new TopicExchange(transactionNotificationExchange);
+    public Queue transactionQueue() {
+        return QueueBuilder.durable(transactionQueue)
+                .withArgument("x-dead-letter-exchange", notificationExchange) // DLX
+                .withArgument("x-dead-letter-routing-key", "dlq.routing.key") // DLQ Routing Key
+                .build();
     }
 
     @Bean
-    public Binding emailBinding() {
-        return BindingBuilder.bind(transactionNotificationQueue())
-                .to(emailExchange())
-                .with(transactionNotificationRoutingKey);
+    public Queue cartQueue() {
+        return QueueBuilder.durable(cartQueue)
+                .withArgument("x-dead-letter-exchange", notificationExchange) // DLX
+                .withArgument("x-dead-letter-routing-key", "dlq.routing.key") // DLQ Routing Key
+                .build();
     }
 
     @Bean
-    public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        // Register the JavaTimeModule to handle Java 8 date/time types
-        objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper;
+    public Queue deadLetterQueue() {
+        return new Queue(deadLetterQueue, true); // DLQ for retries
     }
+
+    @Bean
+    public Binding transactionBinding() {
+        return BindingBuilder.bind(transactionQueue())
+                .to(notificationExchange())
+                .with(transactionRoutingKey);
+    }
+
+    @Bean
+    public Binding cartBinding() {
+        return BindingBuilder.bind(cartQueue())
+                .to(notificationExchange())
+                .with(cartRoutingKey);
+    }
+
+    @Bean
+    public Binding dlqBinding() {
+        return BindingBuilder.bind(deadLetterQueue())
+                .to(notificationExchange())
+                .with("dlq.routing.key");
+    }
+
+//    @Bean
+//    public ObjectMapper objectMapper() {
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        // Register the JavaTimeModule to handle Java 8 date/time types
+//        objectMapper.registerModule(new JavaTimeModule());
+//        return objectMapper;
+//    }
 
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
-        return new Jackson2JsonMessageConverter(objectMapper()); // Pass the objectMapper with JavaTimeModule
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule()); // Support Java Time (Instant)
+        return new Jackson2JsonMessageConverter(objectMapper);
     }
 }

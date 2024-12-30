@@ -1,16 +1,21 @@
 package org.bazaar.giza.cartItem.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bazaar.giza.cartItem.dto.*;
+import org.bazaar.giza.cartItem.dto.CartItemRequest;
+import org.bazaar.giza.cartItem.dto.CartItemResponse;
+import org.bazaar.giza.cartItem.dto.ProductDto;
 import org.bazaar.giza.cartItem.entity.CartItem;
 import org.bazaar.giza.cartItem.exception.CartItemNotFoundException;
 import org.bazaar.giza.cartItem.exception.InvalidQuantityException;
 import org.bazaar.giza.cartItem.mapper.CartItemMapper;
 import org.bazaar.giza.cartItem.repository.CartItemRepository;
 import org.bazaar.giza.clients.InventoryClient;
+import org.bazaar.giza.transaction.dto.NotificationDto;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -20,6 +25,7 @@ public class CartItemServiceImpl implements CartItemService {
     private final CartItemRepository cartItemRepository;
     private final CartItemMapper cartItemMapper;
     private final InventoryClient inventoryClient;
+    private final RabbitTemplate rabbitTemplate;
 
     @Transactional
     public CartItemResponse addItem(CartItemRequest request) {
@@ -57,6 +63,30 @@ public class CartItemServiceImpl implements CartItemService {
         }
         cartItemRepository.deleteById(cartItemId);
         return "Item removed";
+    }
+    public CartItemResponse updateItem(Long cartItemId, CartItemRequest request) {
+        var cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new CartItemNotFoundException(cartItemId));
+
+        cartItem.setQuantity(request.quantity());
+
+        ProductDto productDto = inventoryClient.getProductById(request.productId());
+
+        var updatedItem = cartItemRepository.save(cartItem);
+
+
+        NotificationDto notificationDto = NotificationDto.builder()
+
+                //TODO: get email from jwt token
+                .recipient("actualUser@gmail.com") // Replace with actual user email
+                .subject(productDto.name() + " has been updated in your cart")
+                .body("Your cart has been updated with product: " + productDto.name())
+                .sentAt(Instant.now())
+                .build();
+
+        rabbitTemplate.convertAndSend("notification_exchange","cart.routing.key", notificationDto);
+
+        return cartItemMapper.toCartItemResponse(updatedItem, productDto);
     }
 
     public String clearCart(Long bazaarUserId) {
