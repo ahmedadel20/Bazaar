@@ -7,7 +7,7 @@ create table bazaar.product_categories(
 );
 
 
-drop table if exists bazaar.products;
+drop table if exists bazaar.products cascade;
 create table bazaar.products(
 	id serial primary key,
 	name varchar(500),
@@ -16,8 +16,18 @@ create table bazaar.products(
 	current_price float,
 	quantity integer,
 	updated_at timestamp,
-	constraint fk_category_id foreign key (category_id) references bazaar.product_categories(id)
+	constraint fk_category_id foreign key (category_id) references bazaar.product_categories(id) ON DELETE CASCADE
 );
+
+DROP TABLE IF EXISTS bazaar.cart_items CASCADE;
+CREATE TABLE bazaar.cart_items (
+    id SERIAL PRIMARY KEY,
+    bazaar_user_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
+    quantity INT NOT NULL,
+    constraint fk_product_id foreign key (product_id) references bazaar.products(id) ON DELETE CASCADE
+);
+
 
 INSERT INTO bazaar.product_categories (name)
 VALUES
@@ -45,4 +55,11 @@ VALUES
 ('Sofa', 8, 499.99, 499.99, 10, CURRENT_TIMESTAMP),
 ('Shampoo', 9, 7.99, 7.99, 80, CURRENT_TIMESTAMP);
 
-select * from bazaar.products;
+
+INSERT INTO bazaar.cart_items (bazaar_user_id, product_id, quantity)
+VALUES
+    (1, 1, 2), -- 2 Smartphones
+    (2, 3, 5),  -- 5 T-Shirts
+    (3, 4, 1),  -- 1 Novel
+    (4, 5, 3),  -- 3 Microwaves
+    (5, 8, 10);  -- 10 Organic Apples
