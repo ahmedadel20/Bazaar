@@ -2,15 +2,17 @@ package com.bazaar.inventory.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
+@Builder
 @Table(name="products")
 public class Product {
     @Id
@@ -25,8 +27,11 @@ public class Product {
     @Column(name="name")
     private String name;
 
-    @Column(name="price")
-    private Double price;
+    @Column(name="original_price")
+    private BigDecimal originalPrice;
+
+    @Column(name="current_price")
+    private BigDecimal currentPrice;
 
     @Column(name="quantity")
     private Long quantity;

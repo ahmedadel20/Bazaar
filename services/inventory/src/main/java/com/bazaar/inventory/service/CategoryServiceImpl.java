@@ -7,8 +7,6 @@ import com.bazaar.inventory.exception.CategoryInUseException;
 import com.bazaar.inventory.exception.CategoryNotFoundException;
 import com.bazaar.inventory.repo.CategoryRepository;
 import com.bazaar.inventory.repo.ProductRepository;
-
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +19,12 @@ public class CategoryServiceImpl implements CategoryService{
     private CategoryRepository categoryRepo;
     private ProductRepository productRepo;
 
+    @Override
     public List<Category> getAll() {
         return categoryRepo.findAll();
     }
 
+    @Override
     public Category getById(Long id) {
         var category = categoryRepo.findById(id);
         if (category.isEmpty())
@@ -32,6 +32,15 @@ public class CategoryServiceImpl implements CategoryService{
         return category.get();
     }
 
+    @Override
+    public Category getByName(String name) {
+        var category = categoryRepo.findByName(name);
+        if (category.isEmpty())
+            throw new CategoryNotFoundException(ErrorMessage.CATEGORY_NAME_NOT_FOUND);
+        return category.get();
+    }
+
+    @Override
     public Category create(Category category) {
         category.setId(null);
         Optional<Category> categoryOptional = categoryRepo.findByName(category.getName());
@@ -41,17 +50,19 @@ public class CategoryServiceImpl implements CategoryService{
         return categoryRepo.save(category);
     }
 
+    @Override
     public Category update(Category category) {
         if (categoryRepo.findById(category.getId()).isEmpty())
             throw new CategoryNotFoundException(ErrorMessage.CATEGORY_ID_NOT_FOUND);
         return categoryRepo.save(category);
     }
 
+    @Override
     public String delete(Long id) {
         Optional<Category> optionalCateogry = categoryRepo.findById(id);
         if (optionalCateogry.isEmpty())
             throw new CategoryNotFoundException(ErrorMessage.CATEGORY_ID_NOT_FOUND);
-        if (productRepo.findByProductCategory(optionalCateogry.get()).size() > 0)
+        if (!productRepo.findByProductCategory(optionalCateogry.get()).isEmpty())
             throw new CategoryInUseException(ErrorMessage.CATEGORY_IN_USE);
         categoryRepo.deleteById(id);
         return "CATEGORY DELETED";
