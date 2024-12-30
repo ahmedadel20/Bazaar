@@ -1,5 +1,5 @@
 package com.bazaar.inventory.controller;
-import com.bazaar.inventory.dto.CategoryDTO;
+import com.bazaar.inventory.dto.CategoryDto;
 import com.bazaar.inventory.dto.CategoryMapper;
 import com.bazaar.inventory.service.CategoryServiceImpl;
 import jakarta.validation.Valid;
@@ -19,7 +19,7 @@ public class CategoriesController {
 
     @GetMapping()
     @ResponseBody
-    public List<CategoryDTO> getCategories() {
+    public List<CategoryDto> getCategories() {
         return categoryService
                 .getAll()
                 .stream()
@@ -29,13 +29,13 @@ public class CategoriesController {
 
     @GetMapping("/{categoryId}")
     @ResponseBody
-    public CategoryDTO getCategoryById(@PathVariable @Valid Long categoryId) {
+    public CategoryDto getCategoryById(@PathVariable @Valid Long categoryId) {
         return categoryMapper.toCategoryDTO(categoryService.getById(categoryId));
     }
 
     @PostMapping()
     @ResponseBody
-    public CategoryDTO createCategory(@RequestBody @Valid CategoryDTO categoryDto) {
+    public CategoryDto createCategory(@RequestBody @Valid CategoryDto categoryDto) {
         return categoryMapper.toCategoryDTO(
                 categoryService.create(
                         categoryMapper.toCategory(categoryDto)
@@ -45,7 +45,7 @@ public class CategoriesController {
 
     @PutMapping()
     @ResponseBody
-    public CategoryDTO updateCategory(@RequestBody CategoryDTO categoryDto) {
+    public CategoryDto updateCategory(@RequestBody CategoryDto categoryDto) {
         return categoryMapper.toCategoryDTO(
                 categoryService.update(
                         categoryMapper.toCategory(categoryDto)

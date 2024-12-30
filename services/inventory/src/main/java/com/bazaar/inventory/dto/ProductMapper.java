@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class ProductMapper {
     CategoryMapper categoryMapper;
 
-    public Product toProduct(ProductDTO productDto) {
+    public Product toProduct(ProductDto productDto) {
         return Product
                 .builder()
                 .id(productDto.id())
@@ -24,8 +24,8 @@ public class ProductMapper {
                 .build();
     }
 
-    public ProductDTO toProductDTO(Product product) {
-        return ProductDTO
+    public ProductDto toProductDTO(Product product) {
+        return ProductDto
                 .builder()
                 .id(product.getId())
                 .categoryDto(categoryMapper.toCategoryDTO(product.getProductCategory()))

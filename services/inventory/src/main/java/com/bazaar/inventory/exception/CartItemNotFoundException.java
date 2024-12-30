@@ -1,4 +1,4 @@
-package org.bazaar.giza.cartItem.exception;
+package com.bazaar.inventory.exception;
 
 public class CartItemNotFoundException extends RuntimeException {
     public CartItemNotFoundException(Long cartItemId) {

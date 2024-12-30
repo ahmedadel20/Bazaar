@@ -1,4 +1,4 @@
-package org.bazaar.giza.cartItem.dto;
+package org.bazaar.giza.clients;
 
 import lombok.Builder;
 

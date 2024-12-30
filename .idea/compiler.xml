@@ -13,15 +13,6 @@
         <module name="product-catalogue" />
         <module name="customer" />
       </profile>
-      <profile name="Annotation profile for inventory" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath>
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
-        </processorPath>
-        <module name="inventory" />
-      </profile>
       <profile name="Annotation profile for order-management" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -30,6 +21,16 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
         </processorPath>
         <module name="order-management" />
+        <module name="notification" />
+      </profile>
+      <profile name="Annotation profile for inventory" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
+        </processorPath>
+        <module name="inventory" />
       </profile>
     </annotationProcessing>
   </component>
@@ -37,6 +38,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="customer" options="-parameters" />
       <module name="inventory" options="-parameters" />
+      <module name="notification" options="-parameters" />
       <module name="order-management" options="-parameters" />
       <module name="product-catalogue" options="-parameters" />
     </option>
