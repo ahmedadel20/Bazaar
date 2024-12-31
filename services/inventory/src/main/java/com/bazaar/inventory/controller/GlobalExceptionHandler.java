@@ -1,11 +1,8 @@
 package com.bazaar.inventory.controller;
 
-import com.bazaar.inventory.exception.ErrorResponse;
-import com.bazaar.inventory.exception.CategoryDuplicateNameException;
-import com.bazaar.inventory.exception.CategoryInUseException;
-import com.bazaar.inventory.exception.CategoryNotFoundException;
-import com.bazaar.inventory.exception.ProductNotFoundException;
+import com.bazaar.inventory.exception.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -60,6 +57,32 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 new Timestamp(System.currentTimeMillis())
         );
     }
+
+    @ExceptionHandler(CartItemNotFoundException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleCartItemNotFoundException(CartItemNotFoundException ex) {
+        return new ErrorResponse(
+                HttpStatus.NOT_FOUND,
+                ex.getMessage(),
+                new Timestamp(System.currentTimeMillis())
+        );
+    }
+
+
+    @ExceptionHandler(InvalidQuantityException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.FAILED_DEPENDENCY)
+    public ErrorResponse handleInvalidQuantityException(InvalidQuantityException ex) {
+        return new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                ex.getMessage(),
+                new Timestamp(System.currentTimeMillis())
+        );
+    }
+
+
+
 
 //    @Override
 //    protected ResponseEntity<Object> handleMethodArgumentNotValid() {

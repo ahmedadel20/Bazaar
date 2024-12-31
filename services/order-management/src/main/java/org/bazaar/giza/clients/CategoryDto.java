@@ -1,10 +1,10 @@
-package com.bazaar.inventory.dto;
+package org.bazaar.giza.clients;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public record CategoryDTO (
+public record CategoryDto(
     @NotNull Long id,
     String name
 )

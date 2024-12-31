@@ -1,4 +1,4 @@
-package org.bazaar.giza.cartItem.exception;
+package com.bazaar.inventory.exception;
 
 public class InvalidQuantityException extends RuntimeException {
     public InvalidQuantityException() {

@@ -19,7 +19,6 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderResponse> create(@RequestBody OrderRequest orderRequest) {
-        Long currentBazaarUserId = getCurrentBazaarUserId();
         return new ResponseEntity<>(orderService.create(orderRequest), HttpStatus.CREATED);
     }
 
@@ -42,6 +41,6 @@ public class OrderController {
 
     private Long getCurrentBazaarUserId() {
         // Implementation as shown earlier
-        return null;
+        return 1L;
     }
 }

@@ -1,7 +1,6 @@
 package com.bazaar.inventory.controller;
-import com.bazaar.inventory.dto.CategoryDTO;
 import com.bazaar.inventory.dto.CategoryMapper;
-import com.bazaar.inventory.dto.ProductDTO;
+import com.bazaar.inventory.dto.ProductDto;
 import com.bazaar.inventory.dto.ProductMapper;
 import com.bazaar.inventory.service.ProductServiceImpl;
 import jakarta.validation.Valid;
@@ -9,7 +8,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +21,7 @@ public class ProductsController {
 
     @GetMapping()
     @ResponseBody
-    public List<ProductDTO> getProducts() {
+    public List<ProductDto> getProducts() {
         return productService
                 .getAll()
                 .stream()
@@ -33,13 +31,13 @@ public class ProductsController {
 
     @GetMapping("/{productId}")
     @ResponseBody
-    public ProductDTO getProductById(@PathVariable Long productId) {
+    public ProductDto getProductById(@PathVariable Long productId) {
         return productMapper.toProductDTO(productService.getById(productId));
     }
 
     @GetMapping("/bycategories")
     @ResponseBody
-    public List<ProductDTO> getProductById(@RequestBody List<Long> categoryIds) {
+    public List<ProductDto> getProductById(@RequestBody List<Long> categoryIds) {
         return productService
                 .getProductsByCategories(categoryIds)
                 .stream()
@@ -49,7 +47,7 @@ public class ProductsController {
 
     @GetMapping("/listofproducts")
     @ResponseBody
-    public List<ProductDTO> getListOfProducts(@RequestBody List<Long> productIds) {
+    public List<ProductDto> getListOfProducts(@RequestBody List<Long> productIds) {
         return productService
                 .getProductsByIds(productIds)
                 .stream()
@@ -59,13 +57,13 @@ public class ProductsController {
 
     @PostMapping()
     @ResponseBody
-    public ProductDTO createProduct(@RequestBody @Valid ProductDTO productDto) {
+    public ProductDto createProduct(@RequestBody @Valid ProductDto productDto) {
         return productMapper.toProductDTO(productService.create(productMapper.toProduct(productDto)));
     }
 
     @PutMapping()
     @ResponseBody
-    public ProductDTO updateProduct(@RequestBody @Valid ProductDTO productDto) {
+    public ProductDto updateProduct(@RequestBody @Valid ProductDto productDto) {
         return productMapper.toProductDTO(productService.update(productMapper.toProduct(productDto)));
     }
 

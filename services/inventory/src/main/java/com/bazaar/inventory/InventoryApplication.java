@@ -1,5 +1,6 @@
 package com.bazaar.inventory;
 
+import com.bazaar.inventory.repo.CartItemRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,8 +17,9 @@ public class InventoryApplication {
 	}
 
 	@Bean
-	public CommandLineRunner myMain(ProductService product) {
+	public CommandLineRunner myMain(CartItemRepository cart) {
 		return args -> {
+//			System.out.println(cart.findByBazaarUserIdAndProductId(5L,8L));
 		};
 	}
 }

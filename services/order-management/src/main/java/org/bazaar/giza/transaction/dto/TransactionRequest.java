@@ -7,6 +7,5 @@ import java.math.BigDecimal;
 @Builder
 public record TransactionRequest(Long id,
                                  Long orderId,
-                                 String paymentStatus,
-                                 BigDecimal finalPrice) {
+                                 String paymentStatus) {
 }
