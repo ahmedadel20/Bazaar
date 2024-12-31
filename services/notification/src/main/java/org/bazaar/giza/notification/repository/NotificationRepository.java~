@@ -1,0 +1,4 @@
+package org.bazaar.giza.notification.repository;
+
+public interface NotificationRepository {
+}

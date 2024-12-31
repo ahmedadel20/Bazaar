@@ -1,0 +1,2 @@
+package org.bazaar.giza.order.exception;public class OrderEmptyException {
+}
