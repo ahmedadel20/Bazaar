@@ -5,4 +5,5 @@ public class ErrorMessage {
     public final static String SALE_ID_NOT_FOUND = "A sale with the given id does not exist.";
     public final static String SALE_STATUS_ID_NOT_FOUND = "A sale status with the given id does not exist.";
     public final static String SALE_STATUS_STATUS_NOT_FOUND = "A sale status with the given status does not exist.";
+    public final static String INVENTORY_SERVICE_CONNECTION_ERROR = "An error occured while connecting to inventory service.";
 }

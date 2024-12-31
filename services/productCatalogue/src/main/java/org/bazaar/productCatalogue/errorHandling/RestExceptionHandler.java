@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.bazaar.productCatalogue.client.ClientException;
+import org.bazaar.productCatalogue.config.StateMachineException;
 import org.bazaar.productCatalogue.sale.exception.SaleException;
 import org.bazaar.productCatalogue.saleStatus.exception.SaleStatusException;
 import org.springframework.http.HttpHeaders;
@@ -36,6 +38,22 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ErrorResponse handleSaleStatusException(SaleStatusException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        return errorResponse;
+    }
+
+    @ExceptionHandler(ClientException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handleClientException(ClientException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        return errorResponse;
+    }
+
+    @ExceptionHandler(StateMachineException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handleStateMachineException(StateMachineException ex) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
         return errorResponse;
     }

@@ -7,10 +7,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.bazaar.productCatalogue.sale.dto.SaleMapper;
+import org.bazaar.productCatalogue.client.ClientException;
 import org.bazaar.productCatalogue.client.InventoryClient;
 import org.bazaar.productCatalogue.constant.ErrorMessage;
+import org.bazaar.productCatalogue.enums.SaleEvent;
 import org.bazaar.productCatalogue.enums.SaleStatusEnum;
-import org.bazaar.productCatalogue.sale.dto.PriceUpdateRequest;
 import org.bazaar.productCatalogue.sale.dto.ProductResponse;
 import org.bazaar.productCatalogue.sale.dto.SaleCreateRequest;
 import org.bazaar.productCatalogue.sale.dto.SaleResponse;
@@ -18,10 +19,18 @@ import org.bazaar.productCatalogue.sale.entity.Sale;
 import org.bazaar.productCatalogue.sale.exception.SaleException;
 import org.bazaar.productCatalogue.sale.repo.SaleRepo;
 import org.bazaar.productCatalogue.saleStatus.service.SaleStatusService;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.GenericMessage;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.statemachine.StateMachine;
+import org.springframework.statemachine.StateMachineEventResult;
+import org.springframework.statemachine.StateMachineEventResult.ResultType;
+import org.springframework.statemachine.config.StateMachineFactory;
+import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
+import reactor.core.publisher.Mono;
 
 @AllArgsConstructor
 @Service
@@ -30,6 +39,7 @@ public class SaleServiceImpl implements SaleService {
     private final SaleStatusService saleStatusService;
     private final SaleMapper mapper;
     private final InventoryClient inventoryClient;
+    private final StateMachineFactory<SaleStatusEnum, SaleEvent> stateMachineFactory;
 
     @Override
     public SaleResponse createSale(SaleCreateRequest saleCreateRequest) {
@@ -40,18 +50,26 @@ public class SaleServiceImpl implements SaleService {
          * Send request to InventoryService to retrieve a list of product id's
          * associated with the categories given in sale request
          */
-        // FIXME: Have this end point also return the product DTOs
-        sale.setProductIds(inventoryClient.getProductsByCategories(saleCreateRequest.categoryIds()));
-        List<ProductResponse> productDtos = inventoryClient.getProductsById(sale.getProductIds());
+        try {
+            sale.setProductIds(inventoryClient.getProductsByCategories(saleCreateRequest.categoryIds()));
+            List<ProductResponse> productDtos = inventoryClient.getProductsById(sale.getProductIds());
 
-        return mapper.toSaleResponse(repo.save(sale), productDtos);
+            return mapper.toSaleResponse(repo.save(sale), productDtos);
+        } catch (Exception e) {
+            throw new ClientException(ErrorMessage.INVENTORY_SERVICE_CONNECTION_ERROR);
+        }
     }
 
     @Override
     public SaleResponse getSingleSale(Long id) {
         Sale sale = searchId(id);
-        List<ProductResponse> productDtos = inventoryClient.getProductsById(sale.getProductIds());
-        return mapper.toSaleResponse(sale, productDtos);
+        try {
+            List<ProductResponse> productDtos = inventoryClient.getProductsById(sale.getProductIds());
+            return mapper.toSaleResponse(sale, productDtos);
+        } catch (Exception e) {
+            throw new ClientException(ErrorMessage.INVENTORY_SERVICE_CONNECTION_ERROR);
+        }
+
     }
 
     @Override
@@ -60,8 +78,12 @@ public class SaleServiceImpl implements SaleService {
         List<Sale> sales = repo.findAll();
 
         for (Sale sale : sales) {
-            List<ProductResponse> productDtos = inventoryClient.getProductsById(sale.getProductIds());
-            saleResponses.add(mapper.toSaleResponse(sale, productDtos));
+            try {
+                List<ProductResponse> productDtos = inventoryClient.getProductsById(sale.getProductIds());
+                saleResponses.add(mapper.toSaleResponse(sale, productDtos));
+            } catch (Exception e) {
+                throw new ClientException(ErrorMessage.INVENTORY_SERVICE_CONNECTION_ERROR);
+            }
         }
 
         return saleResponses;
@@ -82,10 +104,7 @@ public class SaleServiceImpl implements SaleService {
         List<Sale> salesStartingToday = repo.findByStartDate(currentDate);
 
         for (Sale sale : salesStartingToday) {
-            sale.setStatus(saleStatusService.getSaleStatusFromStatus(SaleStatusEnum.ACTIVE));
-            sale = repo.save(sale);
-            inventoryClient
-                    .updateProductPrices(new PriceUpdateRequest(sale.getProductIds(), sale.getDiscountPercentage()));
+            processSaleEvent(sale, SaleEvent.ACTIVATE);
         }
     }
 
@@ -96,10 +115,7 @@ public class SaleServiceImpl implements SaleService {
         List<Sale> salesEndingToday = repo.findByEndDate(currentDate);
 
         for (Sale sale : salesEndingToday) {
-            sale.setStatus(saleStatusService.getSaleStatusFromStatus(SaleStatusEnum.INACTIVE));
-            sale = repo.save(sale);
-            // 100% percentage to disable sale
-            inventoryClient.updateProductPrices(new PriceUpdateRequest(sale.getProductIds(), 1.0f));
+            processSaleEvent(sale, SaleEvent.DEACTIVATE);
         }
     }
 
@@ -109,6 +125,20 @@ public class SaleServiceImpl implements SaleService {
         repo.delete(sale);
 
         return "Sale deleted successfully.";
+    }
+
+    @Override
+    public Sale testActivate(Long id) {
+        Sale sale = searchId(id);
+        processSaleEvent(sale, SaleEvent.ACTIVATE);
+        return sale;
+    }
+
+    @Override
+    public Sale testDeactivate(Long id) {
+        Sale sale = searchId(id);
+        processSaleEvent(sale, SaleEvent.DEACTIVATE);
+        return sale;
     }
 
     // Helper Functions
@@ -122,5 +152,34 @@ public class SaleServiceImpl implements SaleService {
             throw new SaleException(ErrorMessage.SALE_ID_NOT_FOUND);
         }
         return saleOptional.get();
+    }
+
+    private void processSaleEvent(Sale sale, SaleEvent event) {
+        // Initialize and start state machine
+        StateMachine<SaleStatusEnum, SaleEvent> stateMachine = stateMachineFactory.getStateMachine();
+        stateMachine.startReactively().block();
+
+        // Reset state machine to current sale status
+        stateMachine.getStateMachineAccessor()
+                .doWithAllRegions(accessor -> accessor.resetStateMachineReactively(
+                        new DefaultStateMachineContext<>(sale.getStatus().getStatus(), null, null, null)).block());
+
+        // Store sale in extended state for further use
+        stateMachine.getExtendedState().getVariables().put("sale", sale);
+
+        // Process the event
+        Message<SaleEvent> message = new GenericMessage<SaleEvent>(event);
+        StateMachineEventResult<SaleStatusEnum, SaleEvent> res = stateMachine.sendEvent(Mono.just(message)).blockLast();
+
+        // Check that the event was processed successfully
+        if (res.getResultType() == ResultType.DENIED) {
+            throw (RuntimeException) stateMachine.getExtendedState().getVariables().get("ERROR");
+        }
+
+        // Update sale's status with the new state
+        SaleStatusEnum newStatusEnum = stateMachine.getState().getId();
+        sale.setStatus(saleStatusService.getSaleStatusFromStatus(newStatusEnum));
+
+        repo.save(sale);
     }
 }
