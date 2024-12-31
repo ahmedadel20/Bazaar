@@ -16,9 +16,6 @@ public class RabbitMQConfig {
     @Value("${rabbitmq.routing.transaction}")
     private String transactionRoutingKey;
 
-    @Value("${rabbitmq.routing.cart}")
-    private String cartRoutingKey;
-
     @Bean
     public TopicExchange notificationExchange() {
         return new TopicExchange(notificationExchange, true, false); // Durable

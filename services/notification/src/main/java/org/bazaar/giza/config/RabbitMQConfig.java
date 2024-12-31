@@ -77,14 +77,6 @@ public class RabbitMQConfig {
                 .with("dlq.routing.key");
     }
 
-//    @Bean
-//    public ObjectMapper objectMapper() {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        // Register the JavaTimeModule to handle Java 8 date/time types
-//        objectMapper.registerModule(new JavaTimeModule());
-//        return objectMapper;
-//    }
-
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
         ObjectMapper objectMapper = new ObjectMapper();

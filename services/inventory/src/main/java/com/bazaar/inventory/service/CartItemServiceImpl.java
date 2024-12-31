@@ -9,21 +9,26 @@ import com.bazaar.inventory.exception.CartItemNotFoundException;
 import com.bazaar.inventory.exception.InvalidQuantityException;
 import com.bazaar.inventory.dto.CartItemMapper;
 import com.bazaar.inventory.repo.CartItemRepository;
-//import com.bazaar.inventory.dto.NotificationDto;
-//import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import com.bazaar.inventory.dto.NotificationDto;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class CartItemServiceImpl implements CartItemService {
-
+    @Value("${rabbitmq.exchange.notification}")
+    String notificationExchange;
+    @Value("${rabbitmq.routing.cart}")
+    String cartRoutingKey;
     private final CartItemRepository cartItemRepository;
     private final CartItemMapper cartItemMapper;
     private final ProductService productService;
-//    private final RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
     @Transactional
     public CartItem addItem(CartItem cartItem) {
@@ -75,16 +80,16 @@ public class CartItemServiceImpl implements CartItemService {
         var updatedItem = cartItemRepository.save(existingCartItem);
 
 
-//        NotificationDto notificationDto = NotificationDto.builder()
-//
-//                //TODO: get email from jwt token
-//                .recipient("actualUser@gmail.com") // Replace with actual user email
-//                .subject(product.getName() + " has been updated in your cart")
-//                .body("Your cart has been updated with product: " + product.getName())
-//                .sentAt(Instant.now())
-//                .build();
-//
-//        rabbitTemplate.convertAndSend("notification_exchange","cart.routing.key", notificationDto);
+        NotificationDto notificationDto = NotificationDto.builder()
+
+                //TODO: get email from jwt token
+                .recipient("abdalla.maged95@gmail.com") // Replace with actual user email
+                .subject(product.getName() + " has been updated in your cart")
+                .body("Your cart has been updated with product: " + product.getName())
+                .sentAt(Instant.now())
+                .build();
+
+        rabbitTemplate.convertAndSend(notificationExchange, cartRoutingKey, notificationDto);
 
         return updatedItem;
     }
