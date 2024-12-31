@@ -40,7 +40,7 @@ public class OrderServiceImpl implements OrderService {
 
         // Calculate the total price dynamically
         BigDecimal totalPrice = cartItemResponses.stream()
-                .map(item -> item.currentPrice().multiply(new BigDecimal(item.quantity())))
+                .map(item -> item.productDto().currentPrice().multiply(new BigDecimal(item.quantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up the total price
 
         // Save the price

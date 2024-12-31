@@ -10,6 +10,7 @@ import org.bazaar.giza.transaction.exception.TransactionNotFoundException;
 import org.bazaar.giza.transaction.mapper.TransactionMapper;
 import org.bazaar.giza.transaction.repository.TransactionRepository;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -18,6 +19,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService{
+    @Value("${rabbitmq.exchange.notification}")
+    private String notificationExchange;
+    @Value("${rabbitmq.routing.transaction}")
+    private String transactionRoutingKey;
     private final TransactionRepository transactionRepository;
     private final OrderService orderService;
     private final TransactionMapper transactionMapper;
@@ -30,19 +35,20 @@ public class TransactionServiceImpl implements TransactionService{
         transaction.setId(null);
         var orderResponse = orderService.getById(request.orderId());
         transaction.setOrder(orderMapper.toOrder(orderResponse));
+        transaction.setFinalPrice(orderResponse.finalPrice());
         var savedTransaction = transactionRepository.save(transaction);
 
         NotificationDto notificationDto = NotificationDto.builder()
 
                 //TODO: get email from jwt token
-                .recipient("actualUser@gmail.com") // Replace with actual user email
+                .recipient("abdalla.maged95@gmail.com") // Replace with actual user email
 
                 .subject("Transaction Confirmation")
                 .body("Your transaction for order #" + request.orderId() + " is confirmed.")
                 .sentAt(Instant.now())
                 .build();
 
-        rabbitTemplate.convertAndSend("notification_exchange", "transaction.routing.key", notificationDto);
+        rabbitTemplate.convertAndSend(notificationExchange, transactionRoutingKey, notificationDto);
 
         return transactionMapper.toTransactionResponse(savedTransaction);
     }
@@ -55,7 +61,6 @@ public class TransactionServiceImpl implements TransactionService{
 
         // Update only allowed fields
         existingTransaction.setPaymentStatus(request.paymentStatus());
-        existingTransaction.setFinalPrice(request.finalPrice());
 
         // Save updated transaction
         return transactionMapper.toTransactionResponse(transactionRepository.save(existingTransaction));

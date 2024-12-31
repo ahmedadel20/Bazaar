@@ -10,17 +10,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    @Value("${rabbitmq.exchange.notification}")
-    private String notificationExchange;
-
-    @Value("${rabbitmq.routing.transaction}")
-    private String transactionRoutingKey;
-
-    @Bean
-    public TopicExchange notificationExchange() {
-        return new TopicExchange(notificationExchange, true, false); // Durable
-    }
-
     @Bean
     public MessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter(); // JSON Serialization

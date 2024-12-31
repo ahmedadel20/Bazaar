@@ -34,6 +34,7 @@ public class OrderMapper {
                 .bazaarUserId(orderResponse.bazaarUserId())
                 .description(orderResponse.description())
                 .orderDate(orderResponse.orderDate())
+                .finalPrice(orderResponse.finalPrice())
                 .build();
     }
 }

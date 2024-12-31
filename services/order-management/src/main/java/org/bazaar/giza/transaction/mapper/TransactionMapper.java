@@ -3,6 +3,7 @@ package org.bazaar.giza.transaction.mapper;
 import lombok.RequiredArgsConstructor;
 import org.bazaar.giza.order.entity.Order;
 import org.bazaar.giza.order.mapper.OrderMapper;
+import org.bazaar.giza.order.service.OrderService;
 import org.bazaar.giza.transaction.dto.TransactionRequest;
 import org.bazaar.giza.transaction.dto.TransactionResponse;
 import org.bazaar.giza.transaction.entity.Transaction;
@@ -14,12 +15,13 @@ import java.sql.Date;
 @RequiredArgsConstructor
 public class TransactionMapper {
     private final OrderMapper orderMapper;
+    private final OrderService orderService;
     public Transaction toTransaction(TransactionRequest request) {
         return Transaction.builder()
                 .id(request.id())
                 .order(Order.builder().id(request.orderId()).build())
                 .paymentStatus(request.paymentStatus())
-                .finalPrice(request.finalPrice())
+                .finalPrice(orderService.getById(request.orderId()).finalPrice())
                 .createdAt(new Date(System.currentTimeMillis()))
                 .build();
     }
