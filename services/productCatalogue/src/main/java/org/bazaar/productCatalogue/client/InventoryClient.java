@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "inventory", url = "${inventory.service.url}")
 public interface InventoryClient {
     @GetMapping("/api/v1/products/bycategories")
-    List<Long> getProductsByCategories(List<Long> categories);
+    List<ProductResponse> getProductsByCategories(List<Long> categories);
 
     @GetMapping("/api/v1/products/{productId}")
     ProductResponse getSingleProductById(@PathVariable Long productId);
 
-    @GetMapping("/api/v1/products")
+    @GetMapping("/api/v1/products/listofproducts")
     List<ProductResponse> getProductsById(@RequestBody List<Long> productIds);
 
     // FIXME: Update url and method name
