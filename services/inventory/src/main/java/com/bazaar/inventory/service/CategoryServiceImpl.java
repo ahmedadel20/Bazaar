@@ -9,6 +9,7 @@ import com.bazaar.inventory.repo.CategoryRepository;
 import com.bazaar.inventory.repo.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
@@ -41,6 +42,7 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
+    @Transactional
     public Category create(Category category) {
         category.setId(null);
         Optional<Category> categoryOptional = categoryRepo.findByName(category.getName());
@@ -51,13 +53,17 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
+    @Transactional
     public Category update(Category category) {
         if (categoryRepo.findById(category.getId()).isEmpty())
             throw new CategoryNotFoundException(ErrorMessage.CATEGORY_ID_NOT_FOUND);
+        if (categoryRepo.findByName(category.getName()).isPresent())
+            throw new CategoryDuplicateNameException(ErrorMessage.DUPLICATE_CATEOGRY_NAME);
         return categoryRepo.save(category);
     }
 
     @Override
+    @Transactional
     public String delete(Long id) {
         Optional<Category> optionalCateogry = categoryRepo.findById(id);
         if (optionalCateogry.isEmpty())
@@ -67,5 +73,4 @@ public class CategoryServiceImpl implements CategoryService{
         categoryRepo.deleteById(id);
         return "CATEGORY DELETED";
     }
-
 }

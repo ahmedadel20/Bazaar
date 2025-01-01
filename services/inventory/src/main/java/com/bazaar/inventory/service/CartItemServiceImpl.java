@@ -25,6 +25,7 @@ public class CartItemServiceImpl implements CartItemService {
     String notificationExchange;
     @Value("${rabbitmq.routing.cart}")
     String cartRoutingKey;
+
     private final CartItemRepository cartItemRepository;
     private final CartItemMapper cartItemMapper;
     private final ProductService productService;
@@ -34,11 +35,6 @@ public class CartItemServiceImpl implements CartItemService {
     public CartItem addItem(CartItem cartItem) {
         Product product = productService.getById(cartItem.getCartProduct().getId());
         cartItem.setCartProduct(product);
-
-        // Validate quantity
-        if (cartItem.getQuantity() <= 0) {
-            throw new InvalidQuantityException();
-        }
 
         // Find existing item
         List<CartItem> existingItem = cartItemRepository
@@ -50,17 +46,15 @@ public class CartItemServiceImpl implements CartItemService {
             // Update quantity if product already exists
             CartItem existingCartItem = existingItem.get(0);
             existingCartItem.setQuantity(existingCartItem.getQuantity() + cartItem.getQuantity());
-//            System.out.println("Product Price: " + product.getCurrentPrice());
             return cartItemRepository.save(existingCartItem);
         } else {
             // Add new item if product does not exist
             cartItem.setId(null);
-            var savedCartItem = cartItemRepository.save(cartItem);
-//            System.out.println("Product DTO Price: " + product.getCurrentPrice());
-            return savedCartItem;
+            return cartItemRepository.save(cartItem);
         }
     }
 
+    @Transactional
     public String removeItem(Long cartItemId) {
         if (!cartItemRepository.existsById(cartItemId)) {
             throw new CartItemNotFoundException(cartItemId); // Handle item not found
@@ -69,16 +63,15 @@ public class CartItemServiceImpl implements CartItemService {
         return "Item removed";
     }
 
-    public CartItem updateItem(Long cartItemId, CartItem cartItem) {
-        var existingCartItem = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new CartItemNotFoundException(cartItemId));
+    public CartItem updateItem(CartItem cartItem) {
+        var existingCartItem = cartItemRepository.findById(cartItem.getId())
+                .orElseThrow(() -> new CartItemNotFoundException(cartItem.getId()));
 
         existingCartItem.setQuantity(cartItem.getQuantity());
 
         Product product = productService.getById(cartItem.getCartProduct().getId());
         cartItem.setCartProduct(product);
         var updatedItem = cartItemRepository.save(existingCartItem);
-
 
         NotificationDto notificationDto = NotificationDto.builder()
 

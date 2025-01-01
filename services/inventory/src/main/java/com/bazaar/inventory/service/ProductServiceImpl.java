@@ -8,6 +8,7 @@ import com.bazaar.inventory.exception.ProductNotFoundException;
 import com.bazaar.inventory.repo.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -26,14 +27,13 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public Product getById(Long id) {
         var product = productRepo.findById(id);
-        if (product.isEmpty())
-            throw new ProductNotFoundException(ErrorMessage.PRODUCT_ID_NOT_FOUND);
-        return product.get();
+        return product.orElseThrow(() -> new ProductNotFoundException(ErrorMessage.PRODUCT_ID_NOT_FOUND));
     }
 
     @Override
     public List<Product> getProductsByCategory(Category category) {
-        return productRepo.findByProductCategory(category);
+        Category existingCategory = categoryService.getById(category.getId());
+        return productRepo.findByProductCategory(existingCategory);
     }
 
     @Override
@@ -54,21 +54,15 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
+    @Transactional
     public Product create(Product product) {
         product.setId(null);
         product.setProductCategory(categoryService.getById(product.getProductCategory().getId()));
-        Product savedProduct = null;
-        try {
-            savedProduct = productRepo.save(product);
-        } catch (Exception e) {
-            System.out.println(e);
-            System.out.println(e.getMessage());
-            throw new ProductDuplicateIdException(ErrorMessage.DUPLICATE_PRODUCT_ID);
-        }
-        return savedProduct;
+        return productRepo.save(product);
     }
 
     @Override
+    @Transactional
     public Product update(Product product) {
         if (productRepo.findById(product.getId()).isEmpty())
             throw new ProductNotFoundException(ErrorMessage.PRODUCT_ID_NOT_FOUND);
@@ -77,12 +71,13 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
+    @Transactional
     public String updateProductsPrices(List<Long> productIDs, Double discount) {
         List<Product> products = getProductsByIds(productIDs);
         products.forEach(
                 p -> {
                     p.setCurrentPrice(
-                            p.getCurrentPrice()
+                            p.getOriginalPrice()
                             .divide(BigDecimal.valueOf(100))
                             .multiply(BigDecimal.valueOf(100 - discount))
                     );
@@ -93,6 +88,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
+    @Transactional
     public String delete(Long productId) {
         if (productRepo.findById(productId).isEmpty())
             throw new ProductNotFoundException(ErrorMessage.PRODUCT_ID_NOT_FOUND);

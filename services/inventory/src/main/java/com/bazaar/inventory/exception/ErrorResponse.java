@@ -9,7 +9,12 @@ import java.sql.Timestamp;
 @Data
 @AllArgsConstructor
 public class ErrorResponse {
-    private HttpStatus httpStatus;
     private String message;
+    private HttpStatus httpStatus;
     private Timestamp timeStamp;
+    public ErrorResponse(HttpStatus httpStatus, String message) {
+        this.httpStatus = httpStatus;
+        this.message = message;
+        this.timeStamp = new Timestamp(System.currentTimeMillis());
+    }
 }

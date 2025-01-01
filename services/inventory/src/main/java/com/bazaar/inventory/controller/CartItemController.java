@@ -1,6 +1,7 @@
 package com.bazaar.inventory.controller;
 
 import com.bazaar.inventory.dto.CartItemMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import com.bazaar.inventory.dto.CartItemDto;
 import com.bazaar.inventory.service.CartItemServiceImpl;
@@ -17,9 +18,9 @@ public class CartItemController {
     private final CartItemServiceImpl cartItemService;
     private final CartItemMapper cartItemMapper;
 
-    @PostMapping()
+    @PostMapping
     @ResponseBody
-    public CartItemDto addItem(@RequestBody CartItemDto request) {
+    public CartItemDto addItem(@RequestBody @Valid CartItemDto request) {
         return cartItemMapper.toCartItemDto(cartItemService.addItem(cartItemMapper.toCartItem(request)));
     }
 
@@ -29,10 +30,10 @@ public class CartItemController {
         return cartItemService.removeItem(cartItemId);
     }
 
-    @PostMapping("/{cartItemId}")
+    @PutMapping
     @ResponseBody
-    public CartItemDto updateItem(@PathVariable Long cartItemId, @RequestBody CartItemDto request) {
-        return cartItemMapper.toCartItemDto(cartItemService.updateItem(cartItemId, cartItemMapper.toCartItem(request)));
+    public CartItemDto updateItem(@RequestBody @Valid CartItemDto request) {
+        return cartItemMapper.toCartItemDto(cartItemService.updateItem(cartItemMapper.toCartItem(request)));
     }
 
     @GetMapping("/{cartItemId}")
