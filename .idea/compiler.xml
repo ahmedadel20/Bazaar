@@ -32,8 +32,16 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
         </processorPath>
         <module name="inventory" />
-        <module name="productCatalogue" />
         <module name="paymentGateway" />
+      </profile>
+      <profile name="Annotation profile for productCatalogue" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath>
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
+        </processorPath>
+        <module name="productCatalogue" />
       </profile>
     </annotationProcessing>
   </component>

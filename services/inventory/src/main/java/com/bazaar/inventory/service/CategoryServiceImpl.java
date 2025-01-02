@@ -8,6 +8,8 @@ import com.bazaar.inventory.exception.CategoryNotFoundException;
 import com.bazaar.inventory.repo.CategoryRepository;
 import com.bazaar.inventory.repo.ProductRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 @Service
-@AllArgsConstructor
+//@AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService{
     private CategoryRepository categoryRepo;
-    private ProductRepository productRepo;
+    private ProductService productService;
+    @Autowired
+    public CategoryServiceImpl(@Lazy ProductService productService, CategoryRepository categoryRepo) {
+        this.productService = productService;
+        this.categoryRepo = categoryRepo;
+    }
 
     @Override
     public List<Category> getAll() {
@@ -45,8 +52,8 @@ public class CategoryServiceImpl implements CategoryService{
     @Transactional
     public Category create(Category category) {
         category.setId(null);
-        Optional<Category> categoryOptional = categoryRepo.findByName(category.getName());
-        if (categoryOptional.isPresent()) {
+        Optional<Category> existingCategory = categoryRepo.findByName(category.getName());
+        if (existingCategory.isPresent()) {
             throw new CategoryDuplicateNameException(ErrorMessage.DUPLICATE_CATEOGRY_NAME);
         }
         return categoryRepo.save(category);
@@ -68,7 +75,7 @@ public class CategoryServiceImpl implements CategoryService{
         Optional<Category> optionalCateogry = categoryRepo.findById(id);
         if (optionalCateogry.isEmpty())
             throw new CategoryNotFoundException(ErrorMessage.CATEGORY_ID_NOT_FOUND);
-        if (!productRepo.findByProductCategory(optionalCateogry.get()).isEmpty())
+        if (!productService.getProductsByCategory(optionalCateogry.get()).isEmpty())
             throw new CategoryInUseException(ErrorMessage.CATEGORY_IN_USE);
         categoryRepo.deleteById(id);
         return "CATEGORY DELETED";

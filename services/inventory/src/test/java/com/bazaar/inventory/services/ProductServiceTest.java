@@ -12,7 +12,6 @@ import com.bazaar.inventory.repo.ProductRepository;
 
 import com.bazaar.inventory.service.CategoryService;
 import com.bazaar.inventory.service.ProductServiceImpl;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -28,6 +29,7 @@ import java.util.Optional;
 
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class ProductServiceTest {
 
     @Mock
@@ -128,6 +130,15 @@ public class ProductServiceTest {
         assertEquals(
                 0,
                 existingProduct.getCurrentPrice().compareTo(BigDecimal.ONE)
+        );
+    }
+
+    @Test
+    void testDeletingProduct() {
+        Mockito.when(productRepo.findById(1L)).thenReturn(Optional.of(existingProduct));
+        assertEquals(
+                "PRODUCT DELETED",
+                productService.delete(1L)
         );
     }
 
