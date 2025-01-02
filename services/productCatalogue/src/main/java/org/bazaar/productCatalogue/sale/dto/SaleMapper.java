@@ -18,13 +18,18 @@ public class SaleMapper {
         return sale;
     }
 
-    public Sale toSale(SaleUpdateRequest saleUpdateRequest) {
+    public Sale toSale(SaleUpdateRequest saleUpdateRequest, Sale originalSale) {
         Sale sale = Sale.builder()
                 .id(saleUpdateRequest.id())
                 .name(saleUpdateRequest.name())
+                .discountPercentage(saleUpdateRequest.discountPercentage())
                 .startDate(saleUpdateRequest.startDate())
                 .endDate(saleUpdateRequest.endDate())
                 .build();
+
+        sale.setStatus(originalSale.getStatus());
+        sale.setProductIds(originalSale.getProductIds());
+
         return sale;
     }
 

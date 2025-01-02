@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.bazaar.productCatalogue.client.ClientException;
-import org.bazaar.productCatalogue.config.StateMachineException;
 import org.bazaar.productCatalogue.sale.exception.SaleException;
 import org.bazaar.productCatalogue.saleStatus.exception.SaleStatusException;
+import org.bazaar.productCatalogue.stateMachine.StateMachineException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;

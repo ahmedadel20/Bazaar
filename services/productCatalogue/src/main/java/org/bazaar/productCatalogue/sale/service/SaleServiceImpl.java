@@ -15,6 +15,7 @@ import org.bazaar.productCatalogue.enums.SaleStatusEnum;
 import org.bazaar.productCatalogue.sale.dto.ProductResponse;
 import org.bazaar.productCatalogue.sale.dto.SaleCreateRequest;
 import org.bazaar.productCatalogue.sale.dto.SaleResponse;
+import org.bazaar.productCatalogue.sale.dto.SaleUpdateRequest;
 import org.bazaar.productCatalogue.sale.entity.Sale;
 import org.bazaar.productCatalogue.sale.exception.SaleException;
 import org.bazaar.productCatalogue.sale.repo.SaleRepo;
@@ -29,6 +30,7 @@ import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
 
+import feign.FeignException;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -44,7 +46,8 @@ public class SaleServiceImpl implements SaleService {
     @Override
     public SaleResponse createSale(SaleCreateRequest saleCreateRequest) {
         Sale sale = mapper.toSale(saleCreateRequest);
-        sale.setId(null);
+
+        validateSale(sale);
 
         /*
          * Send request to InventoryService to retrieve a list of product id's
@@ -63,8 +66,10 @@ public class SaleServiceImpl implements SaleService {
             sale.setProductIds(productIds);
 
             return mapper.toSaleResponse(repo.save(sale), productDtos);
-        } catch (Exception e) {
+        } catch (FeignException e) {
             throw new ClientException(ErrorMessage.INVENTORY_SERVICE_CONNECTION_ERROR);
+        } catch (Exception e) {
+            throw new ClientException(e.getMessage());
         }
     }
 
@@ -74,8 +79,10 @@ public class SaleServiceImpl implements SaleService {
         try {
             List<ProductResponse> productDtos = inventoryClient.getProductsById(sale.getProductIds());
             return mapper.toSaleResponse(sale, productDtos);
-        } catch (Exception e) {
+        } catch (FeignException e) {
             throw new ClientException(ErrorMessage.INVENTORY_SERVICE_CONNECTION_ERROR);
+        } catch (Exception e) {
+            throw new ClientException(e.getMessage());
         }
 
     }
@@ -89,21 +96,33 @@ public class SaleServiceImpl implements SaleService {
             try {
                 List<ProductResponse> productDtos = inventoryClient.getProductsById(sale.getProductIds());
                 saleResponses.add(mapper.toSaleResponse(sale, productDtos));
-            } catch (Exception e) {
+            } catch (FeignException e) {
                 throw new ClientException(ErrorMessage.INVENTORY_SERVICE_CONNECTION_ERROR);
+            } catch (Exception e) {
+                throw new ClientException(e.getMessage());
             }
         }
 
         return saleResponses;
     }
 
-    // @Override
-    // public SaleResponse updateSaleDetails(SaleUpdateRequest saleUpdateRequest) {
-    // Sale sale = searchId(saleUpdateRequest.id());
-    // sale = mapper.toSale(saleUpdateRequest);
+    @Override
+    public SaleResponse updateSaleDetails(SaleUpdateRequest saleUpdateRequest) {
+        Sale originalSale = searchId(saleUpdateRequest.id());
 
-    // return mapper.toSaleResponse(repo.save(sale));
-    // }
+        Sale sale = mapper.toSale(saleUpdateRequest, originalSale);
+        validateSale(sale);
+        sale = repo.save(sale);
+
+        try {
+            List<ProductResponse> productDtos = inventoryClient.getProductsById(sale.getProductIds());
+            return mapper.toSaleResponse(sale, productDtos);
+        } catch (FeignException e) {
+            throw new ClientException(ErrorMessage.INVENTORY_SERVICE_CONNECTION_ERROR);
+        } catch (Exception e) {
+            throw new ClientException(e.getMessage());
+        }
+    }
 
     @Scheduled(cron = "0 1 0 * * ?") // 12:01 AM daily
     @Override
@@ -160,6 +179,16 @@ public class SaleServiceImpl implements SaleService {
             throw new SaleException(ErrorMessage.SALE_ID_NOT_FOUND);
         }
         return saleOptional.get();
+    }
+
+    private void validateSale(Sale sale) {
+        if (sale.getStartDate().after(sale.getEndDate())) {
+            throw new SaleException(ErrorMessage.START_DATE_CANNOT_BE_AFTER_END_DATE);
+        }
+
+        if (repo.findByName(sale.getName()).isPresent()) {
+            throw new SaleException(ErrorMessage.DUPLICATE_SALE_NAME);
+        }
     }
 
     private void processSaleEvent(Sale sale, SaleEvent event) {
