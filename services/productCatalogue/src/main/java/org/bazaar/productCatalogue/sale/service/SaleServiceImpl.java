@@ -93,14 +93,7 @@ public class SaleServiceImpl implements SaleService {
         List<Sale> sales = repo.findAll();
 
         for (Sale sale : sales) {
-            try {
-                List<ProductResponse> productDtos = inventoryClient.getProductsById(sale.getProductIds());
-                saleResponses.add(mapper.toSaleResponse(sale, productDtos));
-            } catch (FeignException e) {
-                throw new ClientException(ErrorMessage.INVENTORY_SERVICE_CONNECTION_ERROR);
-            } catch (Exception e) {
-                throw new ClientException(e.getMessage());
-            }
+            saleResponses.add(mapper.toSaleResponse(sale, null));
         }
 
         return saleResponses;

@@ -14,6 +14,7 @@ public class SaleMapper {
                 .discountPercentage(saleCreateRequest.discountPercentage())
                 .startDate(saleCreateRequest.startDate())
                 .endDate(saleCreateRequest.endDate())
+                .categoryIds(saleCreateRequest.categoryIds())
                 .build();
         return sale;
     }
@@ -25,6 +26,7 @@ public class SaleMapper {
                 .discountPercentage(saleUpdateRequest.discountPercentage())
                 .startDate(saleUpdateRequest.startDate())
                 .endDate(saleUpdateRequest.endDate())
+                .categoryIds(saleUpdateRequest.categoryIds())
                 .build();
 
         sale.setStatus(originalSale.getStatus());
@@ -40,6 +42,7 @@ public class SaleMapper {
                 .startDate(sale.getStartDate())
                 .endDate(sale.getEndDate())
                 .status(sale.getStatus())
+                .categoryIds(sale.getCategoryIds())
                 .products(toProductResponse(productDTO))
                 .build();
         return saleResponse;

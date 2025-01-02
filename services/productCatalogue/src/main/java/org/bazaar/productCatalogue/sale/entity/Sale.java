@@ -40,4 +40,9 @@ public class Sale {
     @CollectionTable(name = "sale_products", joinColumns = @JoinColumn(name = "sale_id"))
     @Column(name = "product_id")
     private List<Long> productIds;
+
+    @ElementCollection
+    @CollectionTable(name = "sale_categories", joinColumns = @JoinColumn(name = "sale_id"))
+    @Column(name = "category_id")
+    private List<Long> categoryIds;
 }
