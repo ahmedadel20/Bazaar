@@ -1,5 +1,7 @@
 package org.bazaar.paymentGateway.payment.dto;
 
-public record UserAccountResponse(String email, float moneyInAccount) {
+import java.math.BigDecimal;
+
+public record UserAccountResponse(String email, BigDecimal moneyInAccount) {
 
 }

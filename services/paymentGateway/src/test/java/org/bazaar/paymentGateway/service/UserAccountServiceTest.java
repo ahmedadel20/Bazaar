@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.bazaar.paymentGateway.constant.ErrorMessage;
@@ -48,8 +49,8 @@ public class UserAccountServiceTest {
 
     @BeforeAll
     public static void setUp() {
-        userAccountCreateRequest = new UserAccountRequest("Bob@gmail.com", "password", 500);
-        userAccountPaymentRequest = new UserAccountRequest("Bob@gmail.com", "password", 250);
+        userAccountCreateRequest = new UserAccountRequest("Bob@gmail.com", "password", new BigDecimal(500));
+        userAccountPaymentRequest = new UserAccountRequest("Bob@gmail.com", "password", new BigDecimal(250));
 
         userAccountPreSave = new UserAccount(
                 null,
@@ -69,7 +70,7 @@ public class UserAccountServiceTest {
 
     @BeforeEach
     public void setUpForEach() {
-        userAccountPaymentRequest = new UserAccountRequest("Bob@gmail.com", "password", 250);
+        userAccountPaymentRequest = new UserAccountRequest("Bob@gmail.com", "password", new BigDecimal(250));
         userAccountPostSave.setMoneyInAccount(userAccountCreateRequest.amountOfMoney());
 
         when(repo.save(userAccountPreSave)).thenReturn(userAccountPostSave);
@@ -125,7 +126,7 @@ public class UserAccountServiceTest {
         userAccountPaymentRequest = new UserAccountRequest(
                 userAccountPaymentRequest.email(),
                 userAccountPaymentRequest.password(),
-                999.99f);
+                new BigDecimal(9999.99));
 
         PaymentGatewayException ex = assertThrows(PaymentGatewayException.class,
                 () -> {
@@ -143,7 +144,7 @@ public class UserAccountServiceTest {
         assertEquals("ACCEPTED: Payment Successful!", result);
 
         assertEquals(
-                userAccountCreateRequest.amountOfMoney() - userAccountPaymentRequest.amountOfMoney(),
+                userAccountCreateRequest.amountOfMoney().subtract(userAccountPaymentRequest.amountOfMoney()),
                 userAccountPostSave.getMoneyInAccount());
     }
 }

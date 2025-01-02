@@ -43,11 +43,11 @@ public class UserAccountServiceImpl implements UserAccountService {
             throw new PaymentGatewayException(ErrorMessage.INCORRECT_EMAIL_OR_PASSWORD);
         }
 
-        if (userAccount.getMoneyInAccount() < userAccountRequest.amountOfMoney()) {
+        if (userAccount.getMoneyInAccount().compareTo(userAccountRequest.amountOfMoney()) == -1) {
             throw new PaymentGatewayException(ErrorMessage.NOT_ENOUGH_MONEY_IN_ACCOUNT);
         }
 
-        userAccount.setMoneyInAccount(userAccount.getMoneyInAccount() - userAccountRequest.amountOfMoney());
+        userAccount.setMoneyInAccount(userAccount.getMoneyInAccount().subtract(userAccountRequest.amountOfMoney()));
         repository.save(userAccount);
         return "ACCEPTED: Payment Successful!";
     }
