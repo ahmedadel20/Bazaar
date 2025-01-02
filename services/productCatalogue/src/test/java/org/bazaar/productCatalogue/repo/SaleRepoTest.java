@@ -33,11 +33,11 @@ public class SaleRepoTest {
     private static Date startDate;
     private static Date endDate;
     private static SaleStatus saleStatus;
-    private static List<Long> categoryIds = new ArrayList<>();
+    private static List<Long> categoryIds;
     // Includes category ids not in categoryIds
-    private static List<Long> unsavedCategoryIds = new ArrayList<>();
+    private static List<Long> unsavedCategoryIds;
     // Includes category ids that are in categoryIds but not all
-    private static List<Long> savedCategoryIds = new ArrayList<>();
+    private static List<Long> savedCategoryIds;
 
     private Sale sale;
 
@@ -48,15 +48,9 @@ public class SaleRepoTest {
 
         saleStatus = new SaleStatus(0, SaleStatusEnum.ACTIVE);
 
-        categoryIds.add((long) 1);
-        categoryIds.add((long) 4);
-        categoryIds.add((long) 11);
-
-        unsavedCategoryIds.add((long) 7);
-        unsavedCategoryIds.add((long) 8);
-
-        savedCategoryIds.add((long) 1);
-        savedCategoryIds.add((long) 3);
+        categoryIds = new ArrayList<>(List.of(1L, 4L, 11L));
+        unsavedCategoryIds = new ArrayList<>(List.of(7L, 8L));
+        savedCategoryIds = new ArrayList<>(List.of(1L, 3L));
     }
 
     @BeforeEach

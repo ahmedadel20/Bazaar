@@ -77,7 +77,7 @@ public class SaleServiceImpl implements SaleService {
     public SaleResponse getSingleSale(Long id) {
         Sale sale = searchId(id);
         try {
-            List<ProductResponse> productDtos = inventoryClient.getProductsById(sale.getProductIds());
+            List<ProductResponse> productDtos = inventoryClient.getProductsByCategories(sale.getCategoryIds());
             return mapper.toSaleResponse(sale, productDtos);
         } catch (FeignException e) {
             throw new ClientException(ErrorMessage.INVENTORY_SERVICE_CONNECTION_ERROR);
@@ -108,7 +108,7 @@ public class SaleServiceImpl implements SaleService {
         sale = repo.save(sale);
 
         try {
-            List<ProductResponse> productDtos = inventoryClient.getProductsById(sale.getProductIds());
+            List<ProductResponse> productDtos = inventoryClient.getProductsByCategories(sale.getCategoryIds());
             return mapper.toSaleResponse(sale, productDtos);
         } catch (FeignException e) {
             throw new ClientException(ErrorMessage.INVENTORY_SERVICE_CONNECTION_ERROR);
