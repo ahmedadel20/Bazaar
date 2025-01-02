@@ -68,7 +68,7 @@ public class ProductServiceTest {
 
     @Test
     void testFindingNonExistingProduct() {
-        Mockito.doThrow(ProductNotFoundException.class).when(productRepo).findById(1L);
+        Mockito.when(productRepo.findById(1L)).thenReturn(Optional.empty());
         assertThrows(
                 ProductNotFoundException.class,
                 () -> productService.getById(1L)
@@ -114,7 +114,7 @@ public class ProductServiceTest {
 
     @Test
     void testUpdatingNonExistingProduct() {
-        Mockito.doThrow(ProductNotFoundException.class).when(productRepo).findById(1L);
+        Mockito.when(productRepo.findById(1L)).thenReturn(Optional.empty());
         assertThrows(
                 ProductNotFoundException.class,
                 () -> productService.update(existingProduct)
@@ -133,7 +133,7 @@ public class ProductServiceTest {
 
     @Test
     void testDeletingNonExistingProduct() {
-        Mockito.doThrow(ProductNotFoundException.class).when(productRepo).findById(1L);
+        Mockito.when(productRepo.findById(1L)).thenReturn(Optional.empty());
         assertThrows(
                 ProductNotFoundException.class,
                 () -> productService.delete(1L)
