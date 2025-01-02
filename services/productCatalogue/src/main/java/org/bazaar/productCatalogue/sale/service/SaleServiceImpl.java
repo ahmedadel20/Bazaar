@@ -175,6 +175,12 @@ public class SaleServiceImpl implements SaleService {
     }
 
     private void validateSale(Sale sale) {
+        Optional<Sale> saleOptional = repo.findByCategoryIdsAndOverlappingDates(sale.getCategoryIds(),
+                sale.getStartDate(), sale.getEndDate());
+        if (saleOptional.isPresent()) {
+            throw new SaleException(ErrorMessage.OVERLAPPING_SALE);
+        }
+
         if (sale.getStartDate().after(sale.getEndDate())) {
             throw new SaleException(ErrorMessage.START_DATE_CANNOT_BE_AFTER_END_DATE);
         }

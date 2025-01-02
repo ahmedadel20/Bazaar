@@ -5,6 +5,7 @@ public class ErrorMessage {
     public final static String SALE_ID_NOT_FOUND = "A sale with the given id does not exist.";
     public final static String START_DATE_CANNOT_BE_AFTER_END_DATE = "Start of sale cannot be after end of sale.";
     public final static String DUPLICATE_SALE_NAME = "A sale with the given name already exists.";
+    public final static String OVERLAPPING_SALE = "A sale that includes one or more of the provided categories already exists and overlaps with the specified date range.";
 
     public final static String SALE_STATUS_ID_NOT_FOUND = "A sale status with the given id does not exist.";
     public final static String SALE_STATUS_STATUS_NOT_FOUND = "A sale status with the given status does not exist.";
