@@ -4,18 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.bazaar.giza.clients.CartItemResponse;
 import org.bazaar.giza.clients.InventoryClient;
 import org.bazaar.giza.exception.InventoryNotAvailableException;
-import org.bazaar.giza.order.dto.OrderRequest;
-import org.bazaar.giza.order.dto.OrderResponse;
 import org.bazaar.giza.order.entity.Order;
 import org.bazaar.giza.order.exception.DuplicateOrderException;
 import org.bazaar.giza.order.exception.OrderEmptyException;
 import org.bazaar.giza.order.exception.OrderNotFoundException;
-import org.bazaar.giza.order.mapper.OrderMapper;
 import org.bazaar.giza.order.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.InvalidClassException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -24,14 +20,13 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final OrderMapper orderMapper;
     private final InventoryClient inventoryClient;
     private Long currentBazaarUserId = 1L;
 
     @Override
     @Transactional
     public Order create(Order order) {
-        if(orderRepository.findById(order.getId()).isPresent()) {
+        if (orderRepository.findById(order.getId()).isPresent()) {
             throw new DuplicateOrderException(order.getId());
         }
 
@@ -48,15 +43,14 @@ public class OrderServiceImpl implements OrderService {
                 .stream()
                 .map(
                         item -> item.productDto()
-                                                    .currentPrice()
-                                                    .multiply(new BigDecimal(item.quantity()))
-                )
+                                .currentPrice()
+                                .multiply(new BigDecimal(item.quantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up the total price
 
         // Save the price
         order.setFinalPrice(totalPrice);
 
-        //Save the order
+        // Save the order
         Order savedOrder = orderRepository.save(order);
 
         // Clear the cart once the order is placed
@@ -81,7 +75,6 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
     }
-
 
     @Override
     public List<Order> getAllByBazaarUserId(Long bazaarUserId) {

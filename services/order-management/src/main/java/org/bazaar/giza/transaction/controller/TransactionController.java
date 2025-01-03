@@ -6,7 +6,6 @@ import org.bazaar.giza.transaction.dto.TransactionResponse;
 import org.bazaar.giza.transaction.mapper.TransactionMapper;
 import org.bazaar.giza.transaction.service.TransactionServiceImpl;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,8 +23,7 @@ public class TransactionController {
     @ResponseStatus(HttpStatus.CREATED)
     public TransactionResponse create(@RequestBody TransactionRequest transactionRequest) {
         return transactionMapper.toTransactionResponse(
-                transactionService.create(transactionMapper.toTransaction(transactionRequest))
-        );
+                transactionService.create(transactionMapper.toTransaction(transactionRequest)));
     }
 
     @GetMapping("/{transactionId}")
@@ -33,8 +31,7 @@ public class TransactionController {
     @ResponseStatus(HttpStatus.OK)
     public TransactionResponse getById(@PathVariable Long transactionId) {
         return transactionMapper.toTransactionResponse(
-                transactionService.getById(transactionId)
-        );
+                transactionService.getById(transactionId));
     }
 
     @PutMapping
@@ -42,8 +39,7 @@ public class TransactionController {
     @ResponseStatus(HttpStatus.OK)
     public TransactionResponse update(@RequestBody TransactionRequest transactionRequest) {
         return transactionMapper.toTransactionResponse(
-                transactionService.update(transactionMapper.toTransaction(transactionRequest))
-        );
+                transactionService.update(transactionMapper.toTransaction(transactionRequest)));
     }
 
     @DeleteMapping("/{transactionId}")

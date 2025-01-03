@@ -5,8 +5,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import com.bazaar.inventory.dto.CartItemDto;
 import com.bazaar.inventory.service.CartItemServiceImpl;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,10 +51,10 @@ public class CartItemController {
     @GetMapping("/user-id/{userId}")
     @ResponseBody
     public List<CartItemDto> getCart(@PathVariable Long userId) {
-        //Long bazaarUserId = getCurrentBazaarUserId(); // Extract userId from JWT
+        // Long bazaarUserId = getCurrentBazaarUserId(); // Extract userId from JWT
 
-        //Only for testing
-//        Long bazaarUserId = 1L;
+        // Only for testing
+        // Long bazaarUserId = 1L;
         return cartItemService.getCart(userId)
                 .stream()
                 .map(cartItemMapper::toCartItemDto)
@@ -66,10 +64,11 @@ public class CartItemController {
     @DeleteMapping("/user-id/{userId}")
     @ResponseBody
     public String clearCart(@PathVariable Long userId) {
-//        Long userId = getCurrentBazaarUserId(); // Extract userId from JWT
+        // Long userId = getCurrentBazaarUserId(); // Extract userId from JWT
         return cartItemService.clearCart(userId);
     }
 
+    // FIXME: Complete method
     // Method to extract userId from JWT
     private Long getCurrentBazaarUserId() {
         // Implementation as shown earlier

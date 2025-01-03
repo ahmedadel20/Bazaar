@@ -1,6 +1,5 @@
 package org.bazaar.giza.services;
 
-import feign.Response;
 import org.bazaar.giza.clients.CartItemResponse;
 import org.bazaar.giza.clients.InventoryClient;
 import org.bazaar.giza.clients.ProductDto;
@@ -23,7 +22,6 @@ import org.mockito.quality.Strictness;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;

@@ -1,7 +1,5 @@
 package org.bazaar.giza.order.service;
 
-import org.bazaar.giza.order.dto.OrderRequest;
-import org.bazaar.giza.order.dto.OrderResponse;
 import org.bazaar.giza.order.entity.Order;
 
 import java.util.List;

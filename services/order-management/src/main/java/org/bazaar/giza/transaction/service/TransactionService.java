@@ -1,6 +1,5 @@
 package org.bazaar.giza.transaction.service;
 
-import org.bazaar.giza.transaction.dto.TransactionRequest;
 import org.bazaar.giza.transaction.entity.Transaction;
 
 import java.util.List;

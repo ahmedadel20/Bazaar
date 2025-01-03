@@ -4,7 +4,6 @@ import com.bazaar.inventory.entity.Product;
 import lombok.RequiredArgsConstructor;
 import com.bazaar.inventory.entity.CartItem;
 import com.bazaar.inventory.exception.CartItemNotFoundException;
-import com.bazaar.inventory.dto.CartItemMapper;
 import com.bazaar.inventory.repo.CartItemRepository;
 import com.bazaar.inventory.dto.NotificationDto;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -35,8 +34,7 @@ public class CartItemServiceImpl implements CartItemService {
         // Find existing item
         List<CartItem> existingItem = cartItemRepository
                 .findByBazaarUserIdAndProductId(
-                        cartItem.getBazaarUserId(), cartItem.getCartProduct().getId()
-                );
+                        cartItem.getBazaarUserId(), cartItem.getCartProduct().getId());
 
         if (!existingItem.isEmpty()) {
             // Update quantity if product already exists
@@ -71,7 +69,7 @@ public class CartItemServiceImpl implements CartItemService {
 
         NotificationDto notificationDto = NotificationDto.builder()
 
-                //TODO: get email from jwt token
+                // TODO: get email from jwt token
                 .recipient("abdalla.maged95@gmail.com") // Replace with actual user email
                 .subject(product.getName() + " has been updated in your cart")
                 .body("Your cart has been updated with product: " + product.getName())
@@ -85,7 +83,7 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Transactional
     public String clearCart(Long bazaarUserId) {
-            cartItemRepository.deleteAllByBazaarUserId(bazaarUserId);
+        cartItemRepository.deleteAllByBazaarUserId(bazaarUserId);
         return "Cart cleared";
     }
 

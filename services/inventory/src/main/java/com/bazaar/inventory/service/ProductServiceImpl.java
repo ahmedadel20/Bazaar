@@ -3,7 +3,6 @@ package com.bazaar.inventory.service;
 import com.bazaar.inventory.constant.ErrorMessage;
 import com.bazaar.inventory.entity.Category;
 import com.bazaar.inventory.entity.Product;
-import com.bazaar.inventory.exception.ProductDuplicateIdException;
 import com.bazaar.inventory.exception.ProductNotFoundException;
 import com.bazaar.inventory.repo.ProductRepository;
 import lombok.AllArgsConstructor;
@@ -15,7 +14,7 @@ import java.util.*;
 
 @Service
 @AllArgsConstructor
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepo;
     private CategoryService categoryService;
 
@@ -40,8 +39,7 @@ public class ProductServiceImpl implements ProductService{
     public List<Product> getProductsByCategories(List<Long> categoryIds) {
         List<Product> products = new ArrayList<>();
         categoryIds.forEach(
-                i -> products.addAll(getProductsByCategory(Category.builder().id(i).build()))
-        );
+                i -> products.addAll(getProductsByCategory(Category.builder().id(i).build())));
         return products;
     }
 
@@ -78,12 +76,10 @@ public class ProductServiceImpl implements ProductService{
                 p -> {
                     p.setCurrentPrice(
                             p.getOriginalPrice()
-                            .divide(BigDecimal.valueOf(100))
-                            .multiply(BigDecimal.valueOf(100 - discount))
-                    );
+                                    .divide(BigDecimal.valueOf(100))
+                                    .multiply(BigDecimal.valueOf(100 - discount)));
                     productRepo.save(p);
-                }
-        );
+                });
         return "%.2f DISCOUNT APPLIED".formatted(discount);
     }
 
@@ -92,7 +88,7 @@ public class ProductServiceImpl implements ProductService{
     public String delete(Long productId) {
         if (productRepo.findById(productId).isEmpty())
             throw new ProductNotFoundException(ErrorMessage.PRODUCT_ID_NOT_FOUND);
-        
+
         productRepo.deleteById(productId);
         return "PRODUCT DELETED";
     }
