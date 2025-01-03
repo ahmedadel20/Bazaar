@@ -105,11 +105,10 @@ public class SaleServiceImpl implements SaleService {
 
         Sale sale = mapper.toSale(saleUpdateRequest, originalSale);
         validateSale(sale);
-        sale = repo.save(sale);
 
         try {
             List<ProductResponse> productDtos = inventoryClient.getProductsByCategories(sale.getCategoryIds());
-            return mapper.toSaleResponse(sale, productDtos);
+            return mapper.toSaleResponse(repo.save(sale), productDtos);
         } catch (FeignException e) {
             throw new ClientException(ErrorMessage.INVENTORY_SERVICE_CONNECTION_ERROR);
         } catch (Exception e) {
