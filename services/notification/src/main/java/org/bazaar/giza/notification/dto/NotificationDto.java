@@ -17,6 +17,7 @@ public record NotificationDto(
         @JsonProperty("body")
         @NotBlank
         String body,
-        @JsonProperty("sentAt") Instant sentAt
+        @JsonProperty("sentAt")
+        Instant sentAt
 )
 {}

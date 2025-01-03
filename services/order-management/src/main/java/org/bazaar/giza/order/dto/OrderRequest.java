@@ -6,10 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record OrderRequest(
-        @Min(value=0)
-        Long id,
-        @Min(value=0)
-        Long bazaarUserId,
-        @NotBlank
-        String description) {
+        @Min(value=0) Long id,
+        @Min(value=0) Long bazaarUserId,
+        @NotBlank String description) {
 }
