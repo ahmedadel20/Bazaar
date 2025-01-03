@@ -3,6 +3,7 @@ package org.bazaar.giza.order.service;
 import lombok.RequiredArgsConstructor;
 import org.bazaar.giza.clients.CartItemResponse;
 import org.bazaar.giza.clients.InventoryClient;
+import org.bazaar.giza.exception.InventoryNotAvailableException;
 import org.bazaar.giza.order.dto.OrderRequest;
 import org.bazaar.giza.order.dto.OrderResponse;
 import org.bazaar.giza.order.entity.Order;
@@ -12,6 +13,8 @@ import org.bazaar.giza.order.mapper.OrderMapper;
 import org.bazaar.giza.order.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.InvalidClassException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -22,37 +25,43 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final InventoryClient inventoryClient;
+    private Long currentBazaarUserId = 1L;
 
     @Override
     @Transactional
-    public OrderResponse create(OrderRequest orderRequest) {
-        if(orderRepository.findById(orderRequest.id()).isPresent()) {
-            throw new DuplicateOrderException(orderRequest.id());
+    public Order create(Order order) {
+        if(orderRepository.findById(order.getId()).isPresent()) {
+            throw new DuplicateOrderException(order.getId());
         }
-
-        Long currentBazaarUserId = getCurrentBazaarUserId();
-        Order order = orderMapper.toOrder(orderRequest);
 
         order.setId(null);
 
         // Retrieve cart items for the user
         List<CartItemResponse> cartItemResponses = inventoryClient.getCart(currentBazaarUserId).getBody();
-
+        if (cartItemResponses == null)
+            throw new InventoryNotAvailableException();
         // Calculate the total price dynamically
-        BigDecimal totalPrice = cartItemResponses.stream()
-                .map(item -> item.productDto().currentPrice().multiply(new BigDecimal(item.quantity())))
+        BigDecimal totalPrice = cartItemResponses
+                .stream()
+                .map(
+                        item -> item.productDto()
+                                                    .currentPrice()
+                                                    .multiply(new BigDecimal(item.quantity()))
+                )
                 .reduce(BigDecimal.ZERO, BigDecimal::add); // Sum up the total price
 
         // Save the price
         order.setFinalPrice(totalPrice);
 
         //Save the order
-        orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
 
         // Clear the cart once the order is placed
-        inventoryClient.clearCart(currentBazaarUserId);
+        String cartCleared = inventoryClient.clearCart(currentBazaarUserId).getBody();
+        if (cartCleared == null)
+            throw new InventoryNotAvailableException();
 
-        return orderMapper.toOrderResponse(order);
+        return savedOrder;
     }
 
     @Override
@@ -65,28 +74,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponse getById(Long orderId) {
-        return orderRepository.findById(orderId).map(orderMapper::toOrderResponse).orElseThrow(() -> new OrderNotFoundException(orderId));
+    public Order getById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 
-//    public List<OrderResponse> getOrdersByStatus(Long bazaarUserId, String status) {
-//        return orderRepository.findAllByBazaarUserIdAndStatus(bazaarUserId, status)
-//                .stream()
-//                .map(orderMapper::toOrderResponse)
-//                .toList();
-//    }
 
     @Override
-    public List<OrderResponse> getAllByBazaarUserId(Long bazaarUserId) {
+    public List<Order> getAllByBazaarUserId(Long bazaarUserId) {
         return orderRepository
                 .findAllByBazaarUserId(bazaarUserId)
                 .stream()
-                .map(orderMapper::toOrderResponse)
                 .toList();
-    }
-
-    private Long getCurrentBazaarUserId() {
-        // Implementation as shown earlier
-        return null;
     }
 }

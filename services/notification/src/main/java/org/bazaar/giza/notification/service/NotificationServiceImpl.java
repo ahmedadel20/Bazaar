@@ -27,14 +27,16 @@ public class NotificationServiceImpl implements NotificationService {
 
     @RabbitListener(queues = {"transaction_notification_queue", "cart_notification_queue"})
     public void processNotification(NotificationDto notificationDto) {
+        boolean msgSent = true;
+        Notification notification = notificationMapper.toNotification(notificationDto);
         try {
             // Send email
             sendEmail(notificationDto);
         } catch (Exception e) {
-            Notification notification = notificationMapper.toNotification(notificationDto);
-            notification.setStatus(NotificationStatus.FAILED);
-            notificationRepository.save(notification);
+            msgSent = false;
         }
+        notification.setStatus((msgSent)? NotificationStatus.SENT : NotificationStatus.FAILED);
+        notificationRepository.save(notification);
     }
 
     public void sendEmail(NotificationDto notificationDto) throws MessagingException {

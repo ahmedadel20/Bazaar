@@ -94,9 +94,10 @@ public class CategoryServiceTest {
 
     @Test
     void testCreatingNewCategory() {
-        Mockito.when(categoryRepo.save(newCategory)).thenReturn(newCategory);
+        Category returnedCategory = Category.builder().id(1L).name("New Category").build();
+        Mockito.when(categoryRepo.save(newCategory)).thenReturn(returnedCategory);
         assertEquals(
-                newCategory,
+                returnedCategory,
                 categoryService.create(newCategory)
         );
     }
@@ -116,10 +117,11 @@ public class CategoryServiceTest {
         Category updatedCategory = Category.builder().id(1L).name("Updated Category").build();
         Mockito.when(categoryRepo.findById(1L)).thenReturn(Optional.of(existingCategory));
         Mockito.when(categoryRepo.findByName("Updated Category")).thenReturn(Optional.empty());
-        Mockito.when(categoryRepo.save(updatedCategory)).thenReturn(updatedCategory);
+        Mockito.when(categoryRepo.save(existingCategory)).thenReturn(existingCategory);
+        existingCategory.setName("Updated Category");
         assertEquals(
                 updatedCategory,
-                categoryService.update(updatedCategory)
+                categoryService.update(existingCategory)
         );
     }
 

@@ -3,6 +3,7 @@ package org.bazaar.giza.order.controller;
 import lombok.RequiredArgsConstructor;
 import org.bazaar.giza.order.dto.OrderRequest;
 import org.bazaar.giza.order.dto.OrderResponse;
+import org.bazaar.giza.order.mapper.OrderMapper;
 import org.bazaar.giza.order.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +17,12 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
-
+    private final OrderMapper orderMapper;
     @PostMapping
-    public ResponseEntity<OrderResponse> create(@RequestBody OrderRequest orderRequest) {
-        return new ResponseEntity<>(orderService.create(orderRequest), HttpStatus.CREATED);
+    @ResponseBody
+    @ResponseStatus(HttpStatus.CREATED)
+    public OrderResponse create(@RequestBody OrderRequest orderRequest) {
+        return orderMapper.toOrderResponse(orderService.create(orderMapper.toOrder(orderRequest)));
     }
 
     @DeleteMapping("/{orderId}")
@@ -28,15 +31,21 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<OrderResponse> getById(@PathVariable Long orderId) {
-        return new ResponseEntity<>(orderService.getById(orderId), HttpStatus.FOUND);
+    @ResponseBody
+    @ResponseStatus(HttpStatus.FOUND)
+    public OrderResponse getById(@PathVariable Long orderId) {
+        return orderMapper.toOrderResponse(orderService.getById(orderId));
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderResponse>> getAllByBazaarUserId() {
+    @ResponseBody
+    @ResponseStatus(HttpStatus.FOUND)
+    public List<OrderResponse> getAllByBazaarUserId() {
         Long bazaarUserId = getCurrentBazaarUserId();
-
-        return new ResponseEntity<>(orderService.getAllByBazaarUserId(bazaarUserId), HttpStatus.FOUND);
+        return orderService.getAllByBazaarUserId(bazaarUserId)
+                .stream()
+                .map(orderMapper::toOrderResponse)
+                .toList();
     }
 
     private Long getCurrentBazaarUserId() {

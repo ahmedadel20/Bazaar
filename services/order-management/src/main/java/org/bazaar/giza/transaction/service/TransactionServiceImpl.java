@@ -33,9 +33,9 @@ public class TransactionServiceImpl implements TransactionService{
     public TransactionResponse create(TransactionRequest request) {
         var transaction = transactionMapper.toTransaction(request);
         transaction.setId(null);
-        var orderResponse = orderService.getById(request.orderId());
-        transaction.setOrder(orderMapper.toOrder(orderResponse));
-        transaction.setFinalPrice(orderResponse.finalPrice());
+        var order = orderService.getById(request.orderId());
+        transaction.setOrder(order);
+        transaction.setFinalPrice(order.getFinalPrice());
         var savedTransaction = transactionRepository.save(transaction);
 
         NotificationDto notificationDto = NotificationDto.builder()

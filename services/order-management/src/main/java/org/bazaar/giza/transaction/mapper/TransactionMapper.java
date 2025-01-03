@@ -21,7 +21,7 @@ public class TransactionMapper {
                 .id(request.id())
                 .order(Order.builder().id(request.orderId()).build())
                 .paymentStatus(request.paymentStatus())
-                .finalPrice(orderService.getById(request.orderId()).finalPrice())
+                .finalPrice(orderService.getById(request.orderId()).getFinalPrice())
                 .createdAt(new Date(System.currentTimeMillis()))
                 .build();
     }

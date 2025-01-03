@@ -1,12 +1,9 @@
 package com.bazaar.inventory.service;
 
-import com.bazaar.inventory.dto.ProductDto;
 import com.bazaar.inventory.entity.Product;
 import lombok.RequiredArgsConstructor;
-import com.bazaar.inventory.dto.CartItemDto;
 import com.bazaar.inventory.entity.CartItem;
 import com.bazaar.inventory.exception.CartItemNotFoundException;
-import com.bazaar.inventory.exception.InvalidQuantityException;
 import com.bazaar.inventory.dto.CartItemMapper;
 import com.bazaar.inventory.repo.CartItemRepository;
 import com.bazaar.inventory.dto.NotificationDto;
@@ -27,7 +24,6 @@ public class CartItemServiceImpl implements CartItemService {
     String cartRoutingKey;
 
     private final CartItemRepository cartItemRepository;
-    private final CartItemMapper cartItemMapper;
     private final ProductService productService;
     private final RabbitTemplate rabbitTemplate;
 
@@ -89,7 +85,7 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Transactional
     public String clearCart(Long bazaarUserId) {
-        cartItemRepository.deleteAllByBazaarUserId(bazaarUserId);
+            cartItemRepository.deleteAllByBazaarUserId(bazaarUserId);
         return "Cart cleared";
     }
 
