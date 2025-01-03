@@ -1,13 +1,9 @@
 package org.bazaar.giza.transaction.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bazaar.giza.order.service.OrderService;
 import org.bazaar.giza.transaction.dto.NotificationDto;
-import org.bazaar.giza.transaction.dto.TransactionRequest;
-import org.bazaar.giza.transaction.dto.TransactionResponse;
 import org.bazaar.giza.transaction.entity.Transaction;
 import org.bazaar.giza.transaction.exception.TransactionNotFoundException;
-import org.bazaar.giza.transaction.mapper.TransactionMapper;
 import org.bazaar.giza.transaction.repository.TransactionRepository;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,8 +20,6 @@ public class TransactionServiceImpl implements TransactionService{
     @Value("${rabbitmq.routing.transaction}")
     private String transactionRoutingKey;
     private final TransactionRepository transactionRepository;
-    private final OrderService orderService;
-    private final TransactionMapper transactionMapper;
     private final RabbitTemplate rabbitTemplate;
 
     @Override
@@ -39,8 +33,7 @@ public class TransactionServiceImpl implements TransactionService{
         NotificationDto notificationDto = NotificationDto.builder()
 
                 //TODO: get email from jwt token
-                .recipient("abdalla.maged95@gmail.com") // Replace with actual user email
-
+                .recipient(getUserEmail()) // Replace with actual user email
                 .subject("Transaction Confirmation")
                 .body("Your transaction for order #" + order.getId() + " is confirmed.")
                 .sentAt(Instant.now())
@@ -83,5 +76,9 @@ public class TransactionServiceImpl implements TransactionService{
     @Override
     public List<Transaction> getAll() {
         return transactionRepository.findAll();
+    }
+
+    public String getUserEmail() {
+        return "abdalla.maged95@gmail.com";
     }
 }

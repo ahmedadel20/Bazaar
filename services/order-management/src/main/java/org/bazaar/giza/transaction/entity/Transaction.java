@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.bazaar.giza.order.entity.Order;
 
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 @Data

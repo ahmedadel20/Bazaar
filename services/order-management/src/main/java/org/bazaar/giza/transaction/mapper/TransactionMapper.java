@@ -9,7 +9,7 @@ import org.bazaar.giza.transaction.dto.TransactionResponse;
 import org.bazaar.giza.transaction.entity.Transaction;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
+import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
