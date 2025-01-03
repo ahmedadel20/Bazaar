@@ -8,6 +8,7 @@ import org.bazaar.giza.order.dto.OrderRequest;
 import org.bazaar.giza.order.dto.OrderResponse;
 import org.bazaar.giza.order.entity.Order;
 import org.bazaar.giza.order.exception.DuplicateOrderException;
+import org.bazaar.giza.order.exception.OrderEmptyException;
 import org.bazaar.giza.order.exception.OrderNotFoundException;
 import org.bazaar.giza.order.mapper.OrderMapper;
 import org.bazaar.giza.order.repository.OrderRepository;
@@ -40,6 +41,8 @@ public class OrderServiceImpl implements OrderService {
         List<CartItemResponse> cartItemResponses = inventoryClient.getCart(currentBazaarUserId).getBody();
         if (cartItemResponses == null)
             throw new InventoryNotAvailableException();
+        if (cartItemResponses.isEmpty())
+            throw new OrderEmptyException(order.getBazaarUserId());
         // Calculate the total price dynamically
         BigDecimal totalPrice = cartItemResponses
                 .stream()

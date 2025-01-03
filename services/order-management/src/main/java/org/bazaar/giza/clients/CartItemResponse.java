@@ -8,6 +8,5 @@ import java.math.BigDecimal;
 public record CartItemResponse(Long id,
                                Long bazaarUserId,
                                ProductDto productDto,
-                               Integer quantity,
-                               BigDecimal currentPrice) {
+                               Integer quantity) {
 }
