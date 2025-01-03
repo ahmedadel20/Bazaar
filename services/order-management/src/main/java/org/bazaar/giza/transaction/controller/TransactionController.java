@@ -3,6 +3,7 @@ package org.bazaar.giza.transaction.controller;
 import lombok.RequiredArgsConstructor;
 import org.bazaar.giza.transaction.dto.TransactionRequest;
 import org.bazaar.giza.transaction.dto.TransactionResponse;
+import org.bazaar.giza.transaction.mapper.TransactionMapper;
 import org.bazaar.giza.transaction.service.TransactionServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,29 +17,49 @@ import java.util.List;
 public class TransactionController {
 
     private final TransactionServiceImpl transactionService;
+    private final TransactionMapper transactionMapper;
 
     @PostMapping
-    public ResponseEntity<TransactionResponse> create(@RequestBody TransactionRequest transactionRequest) {
-        return new ResponseEntity<>(transactionService.create(transactionRequest), HttpStatus.CREATED);
+    @ResponseBody
+    @ResponseStatus(HttpStatus.CREATED)
+    public TransactionResponse create(@RequestBody TransactionRequest transactionRequest) {
+        return transactionMapper.toTransactionResponse(
+                transactionService.create(transactionMapper.toTransaction(transactionRequest))
+        );
     }
 
     @GetMapping("/{transactionId}")
-    public ResponseEntity<TransactionResponse> getById(@PathVariable Long transactionId) {
-        return new ResponseEntity<>(transactionService.getById(transactionId), HttpStatus.OK);
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public TransactionResponse getById(@PathVariable Long transactionId) {
+        return transactionMapper.toTransactionResponse(
+                transactionService.getById(transactionId)
+        );
     }
 
     @PutMapping
-    public ResponseEntity<TransactionResponse> update(@RequestBody TransactionRequest transactionRequest) {
-        return new ResponseEntity<>(transactionService.update(transactionRequest), HttpStatus.OK);
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public TransactionResponse update(@RequestBody TransactionRequest transactionRequest) {
+        return transactionMapper.toTransactionResponse(
+                transactionService.update(transactionMapper.toTransaction(transactionRequest))
+        );
     }
 
     @DeleteMapping("/{transactionId}")
-    public ResponseEntity<String> delete(@PathVariable Long transactionId) {
-        return new ResponseEntity<>(transactionService.delete(transactionId), HttpStatus.OK);
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public String delete(@PathVariable Long transactionId) {
+        return transactionService.delete(transactionId);
     }
 
     @GetMapping
-    public ResponseEntity<List<TransactionResponse>> getAll() {
-        return new ResponseEntity<>(transactionService.getAll(), HttpStatus.OK);
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public List<TransactionResponse> getAll() {
+        return transactionService.getAll()
+                .stream()
+                .map(transactionMapper::toTransactionResponse)
+                .toList();
     }
 }

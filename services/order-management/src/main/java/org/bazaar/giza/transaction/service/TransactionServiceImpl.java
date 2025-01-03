@@ -1,11 +1,11 @@
 package org.bazaar.giza.transaction.service;
 
 import lombok.RequiredArgsConstructor;
-import org.bazaar.giza.order.mapper.OrderMapper;
 import org.bazaar.giza.order.service.OrderService;
 import org.bazaar.giza.transaction.dto.NotificationDto;
 import org.bazaar.giza.transaction.dto.TransactionRequest;
 import org.bazaar.giza.transaction.dto.TransactionResponse;
+import org.bazaar.giza.transaction.entity.Transaction;
 import org.bazaar.giza.transaction.exception.TransactionNotFoundException;
 import org.bazaar.giza.transaction.mapper.TransactionMapper;
 import org.bazaar.giza.transaction.repository.TransactionRepository;
@@ -26,14 +26,12 @@ public class TransactionServiceImpl implements TransactionService{
     private final TransactionRepository transactionRepository;
     private final OrderService orderService;
     private final TransactionMapper transactionMapper;
-    private final OrderMapper orderMapper;
     private final RabbitTemplate rabbitTemplate;
 
     @Override
-    public TransactionResponse create(TransactionRequest request) {
-        var transaction = transactionMapper.toTransaction(request);
+    public Transaction create(Transaction transaction) {
         transaction.setId(null);
-        var order = orderService.getById(request.orderId());
+        var order = transaction.getOrder();
         transaction.setOrder(order);
         transaction.setFinalPrice(order.getFinalPrice());
         var savedTransaction = transactionRepository.save(transaction);
@@ -44,26 +42,26 @@ public class TransactionServiceImpl implements TransactionService{
                 .recipient("abdalla.maged95@gmail.com") // Replace with actual user email
 
                 .subject("Transaction Confirmation")
-                .body("Your transaction for order #" + request.orderId() + " is confirmed.")
+                .body("Your transaction for order #" + order.getId() + " is confirmed.")
                 .sentAt(Instant.now())
                 .build();
 
         rabbitTemplate.convertAndSend(notificationExchange, transactionRoutingKey, notificationDto);
 
-        return transactionMapper.toTransactionResponse(savedTransaction);
+        return savedTransaction;
     }
 
     @Override
-    public TransactionResponse update(TransactionRequest request) {
+    public Transaction update(Transaction transaction) {
         // Check if transaction exists
-        var existingTransaction = transactionRepository.findById(request.id())
-                .orElseThrow(() -> new TransactionNotFoundException(request.id()));
+        var existingTransaction = transactionRepository.findById(transaction.getId())
+                .orElseThrow(() -> new TransactionNotFoundException(transaction.getId()));
 
         // Update only allowed fields
-        existingTransaction.setPaymentStatus(request.paymentStatus());
+        existingTransaction.setPaymentStatus(transaction.getPaymentStatus());
 
         // Save updated transaction
-        return transactionMapper.toTransactionResponse(transactionRepository.save(existingTransaction));
+        return transactionRepository.save(existingTransaction);
     }
 
     @Override
@@ -77,12 +75,13 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
     @Override
-    public TransactionResponse getById(Long transactionId) {
-        return transactionMapper.toTransactionResponse(transactionRepository.findById(transactionId).orElseThrow(() -> new TransactionNotFoundException(transactionId)));
+    public Transaction getById(Long transactionId) {
+        return transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new TransactionNotFoundException(transactionId));
     }
 
     @Override
-    public List<TransactionResponse> getAll() {
-        return transactionRepository.findAll().stream().map(transactionMapper::toTransactionResponse).toList();
+    public List<Transaction> getAll() {
+        return transactionRepository.findAll();
     }
 }

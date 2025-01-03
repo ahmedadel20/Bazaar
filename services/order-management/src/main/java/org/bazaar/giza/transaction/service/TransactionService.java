@@ -1,18 +1,18 @@
 package org.bazaar.giza.transaction.service;
 
 import org.bazaar.giza.transaction.dto.TransactionRequest;
-import org.bazaar.giza.transaction.dto.TransactionResponse;
+import org.bazaar.giza.transaction.entity.Transaction;
 
 import java.util.List;
 
 public interface TransactionService {
-    TransactionResponse create(TransactionRequest transactionRequest);
+    Transaction create(Transaction transaction);
 
-    TransactionResponse update(TransactionRequest request);
+    Transaction update(Transaction request);
 
     String delete(Long transactionId);
 
-    TransactionResponse getById(Long transactionId);
+    Transaction getById(Long transactionId);
 
-    List<TransactionResponse> getAll();
+    List<Transaction> getAll();
 }
