@@ -57,11 +57,12 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     public CustomerResponse updateCustomer(CustomerRequest request) {
-        var customer = searchId(request.id());
+        searchId(request.id());
+        Customer customer = mapper.toCustomer(request);
+
         validateCustomer(customer);
 
-        customer = customerRepo.save(mapper.toCustomer(request));
-        return mapper.toCustomerResponse(customer);
+        return mapper.toCustomerResponse(customerRepo.save(customer));
     }
 
     public String deleteCustomer(Long customerId) {
