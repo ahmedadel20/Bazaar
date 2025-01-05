@@ -1,5 +1,8 @@
 package org.bazaar.giza.services;
 
+import org.bazaar.giza.clients.CustomerResponse;
+import org.bazaar.giza.clients.PaymentGatewayClient;
+import org.bazaar.giza.clients.UserManagementClient;
 import org.bazaar.giza.order.entity.Order;
 import org.bazaar.giza.transaction.entity.Transaction;
 import org.bazaar.giza.transaction.exception.TransactionNotFoundException;
@@ -31,6 +34,10 @@ public class TransactionServiceTest {
     private TransactionRepository transactionRepo;
     @Mock
     private RabbitTemplate rabbitTemplate;
+    @Mock
+    private UserManagementClient userManagementClient;
+    @Mock
+    private PaymentGatewayClient paymentGatewayClient;
     @InjectMocks
     private TransactionServiceImpl transactionService;
 
@@ -70,6 +77,8 @@ public class TransactionServiceTest {
                     newTransaction.setId(1L);
                     return newTransaction;
                 });
+        Mockito.when(userManagementClient.getSingleCustomer(Mockito.any(Long.class)))
+                .thenReturn(CustomerResponse.builder().build());
         assert(
                 compareTransaction(
                         existingTransaction,

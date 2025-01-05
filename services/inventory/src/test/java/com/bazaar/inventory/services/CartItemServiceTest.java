@@ -1,5 +1,7 @@
 package com.bazaar.inventory.services;
 
+import com.bazaar.inventory.clients.CustomerResponse;
+import com.bazaar.inventory.clients.UserManagementClient;
 import com.bazaar.inventory.entity.CartItem;
 import com.bazaar.inventory.entity.Category;
 import com.bazaar.inventory.entity.Product;
@@ -35,6 +37,8 @@ public class CartItemServiceTest {
         private ProductService productService;
         @Mock
         private RabbitTemplate rabbitTemplate;
+        @Mock
+        private UserManagementClient userManagementClient;
         @InjectMocks
         private CartItemServiceImpl cartItemService;
 
@@ -155,7 +159,10 @@ public class CartItemServiceTest {
                                 .thenReturn(Optional.of(existingCartItem));
                 Mockito.when(cartItemRepo.save(existingCartItem))
                                 .thenReturn(existingCartItem);
-                Mockito.when(productService.getById(2L)).thenReturn(product2);
+                Mockito.when(productService.getById(2L))
+                        .thenReturn(product2);
+                Mockito.when(userManagementClient.getSingleCustomer(Mockito.any(Long.class)))
+                        .thenReturn(CustomerResponse.builder().build());
                 existingCartItem.getCartProduct().setId(2L);
                 var returnedItem = cartItemService.updateItem(existingCartItem);
 
