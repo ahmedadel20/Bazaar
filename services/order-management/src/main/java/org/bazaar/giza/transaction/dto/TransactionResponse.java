@@ -4,7 +4,7 @@ import lombok.Builder;
 import org.bazaar.giza.order.dto.OrderResponse;
 
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.util.Date;
 
 @Builder
 public record TransactionResponse(Long id,

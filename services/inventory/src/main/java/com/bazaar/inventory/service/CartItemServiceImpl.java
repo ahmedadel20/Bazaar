@@ -1,13 +1,9 @@
 package com.bazaar.inventory.service;
 
-import com.bazaar.inventory.dto.ProductDto;
 import com.bazaar.inventory.entity.Product;
 import lombok.RequiredArgsConstructor;
-import com.bazaar.inventory.dto.CartItemDto;
 import com.bazaar.inventory.entity.CartItem;
 import com.bazaar.inventory.exception.CartItemNotFoundException;
-import com.bazaar.inventory.exception.InvalidQuantityException;
-import com.bazaar.inventory.dto.CartItemMapper;
 import com.bazaar.inventory.repo.CartItemRepository;
 import com.bazaar.inventory.dto.NotificationDto;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -25,8 +21,8 @@ public class CartItemServiceImpl implements CartItemService {
     String notificationExchange;
     @Value("${rabbitmq.routing.cart}")
     String cartRoutingKey;
+
     private final CartItemRepository cartItemRepository;
-    private final CartItemMapper cartItemMapper;
     private final ProductService productService;
     private final RabbitTemplate rabbitTemplate;
 
@@ -35,32 +31,24 @@ public class CartItemServiceImpl implements CartItemService {
         Product product = productService.getById(cartItem.getCartProduct().getId());
         cartItem.setCartProduct(product);
 
-        // Validate quantity
-        if (cartItem.getQuantity() <= 0) {
-            throw new InvalidQuantityException();
-        }
-
         // Find existing item
         List<CartItem> existingItem = cartItemRepository
                 .findByBazaarUserIdAndProductId(
-                        cartItem.getBazaarUserId(), cartItem.getCartProduct().getId()
-                );
+                        cartItem.getBazaarUserId(), cartItem.getCartProduct().getId());
 
         if (!existingItem.isEmpty()) {
             // Update quantity if product already exists
             CartItem existingCartItem = existingItem.get(0);
             existingCartItem.setQuantity(existingCartItem.getQuantity() + cartItem.getQuantity());
-//            System.out.println("Product Price: " + product.getCurrentPrice());
             return cartItemRepository.save(existingCartItem);
         } else {
             // Add new item if product does not exist
             cartItem.setId(null);
-            var savedCartItem = cartItemRepository.save(cartItem);
-//            System.out.println("Product DTO Price: " + product.getCurrentPrice());
-            return savedCartItem;
+            return cartItemRepository.save(cartItem);
         }
     }
 
+    @Transactional
     public String removeItem(Long cartItemId) {
         if (!cartItemRepository.existsById(cartItemId)) {
             throw new CartItemNotFoundException(cartItemId); // Handle item not found
@@ -69,9 +57,9 @@ public class CartItemServiceImpl implements CartItemService {
         return "Item removed";
     }
 
-    public CartItem updateItem(Long cartItemId, CartItem cartItem) {
-        var existingCartItem = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new CartItemNotFoundException(cartItemId));
+    public CartItem updateItem(CartItem cartItem) {
+        var existingCartItem = cartItemRepository.findById(cartItem.getId())
+                .orElseThrow(() -> new CartItemNotFoundException(cartItem.getId()));
 
         existingCartItem.setQuantity(cartItem.getQuantity());
 
@@ -79,10 +67,9 @@ public class CartItemServiceImpl implements CartItemService {
         cartItem.setCartProduct(product);
         var updatedItem = cartItemRepository.save(existingCartItem);
 
-
         NotificationDto notificationDto = NotificationDto.builder()
 
-                //TODO: get email from jwt token
+                // TODO: get email from jwt token
                 .recipient("abdalla.maged95@gmail.com") // Replace with actual user email
                 .subject(product.getName() + " has been updated in your cart")
                 .body("Your cart has been updated with product: " + product.getName())

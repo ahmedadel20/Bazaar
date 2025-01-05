@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bazaar.productCatalogue.sale.dto.SaleCreateRequest;
 import org.bazaar.productCatalogue.sale.dto.SaleResponse;
+import org.bazaar.productCatalogue.sale.dto.SaleUpdateRequest;
 import org.bazaar.productCatalogue.sale.entity.Sale;
 
 public interface SaleService {
@@ -13,7 +14,8 @@ public interface SaleService {
 
     List<SaleResponse> getAllSales();
 
-    // SaleResponse updateSaleDetails(SaleUpdateRequest saleUpdateRequest);
+    // Does not allow updating which products are on sale
+    SaleResponse updateSaleDetails(SaleUpdateRequest saleUpdateRequest);
 
     void activateSales();
 

@@ -1,16 +1,15 @@
 package org.bazaar.giza.order.service;
 
-import org.bazaar.giza.order.dto.OrderRequest;
-import org.bazaar.giza.order.dto.OrderResponse;
+import org.bazaar.giza.order.entity.Order;
 
 import java.util.List;
 
 public interface OrderService {
-    OrderResponse create(OrderRequest orderRequest);
+    Order create(Order order);
 
     String delete(Long orderId);
 
-    OrderResponse getById(Long orderId);
+    Order getById(Long orderId);
 
-    List<OrderResponse> getAllByBazaarUserId(Long bazaarUserId);
+    List<Order> getAllByBazaarUserId(Long bazaarUserId);
 }

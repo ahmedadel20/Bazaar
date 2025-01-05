@@ -1,4 +1,4 @@
-package org.bazaar.productCatalogue.config;
+package org.bazaar.productCatalogue.stateMachine;
 
 import org.bazaar.productCatalogue.client.ClientException;
 import org.bazaar.productCatalogue.client.InventoryClient;
@@ -15,6 +15,7 @@ import org.springframework.statemachine.config.EnumStateMachineConfigurerAdapter
 import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 
+import feign.FeignException;
 import lombok.AllArgsConstructor;
 
 @Configuration
@@ -34,13 +35,29 @@ public class SaleStateMachineConfig extends EnumStateMachineConfigurerAdapter<Sa
     @Override
     public void configure(StateMachineTransitionConfigurer<SaleStatusEnum, SaleEvent> transitions) throws Exception {
         transitions
+                // Inactive -> Active (Valid)
                 .withExternal()
-                .source(SaleStatusEnum.INACTIVE).target(SaleStatusEnum.ACTIVE).event(SaleEvent.ACTIVATE)
-                .action(activateAction(), ErrorAction())
+                .source(SaleStatusEnum.INACTIVE).target(SaleStatusEnum.ACTIVE)
+                .event(SaleEvent.ACTIVATE)
+                .action(activateAction(), errorAction())
                 .and()
+                // Active -> Inactive (Valid)
                 .withExternal()
-                .source(SaleStatusEnum.ACTIVE).target(SaleStatusEnum.INACTIVE).event(SaleEvent.DEACTIVATE)
-                .action(deactivateAction(), ErrorAction());
+                .source(SaleStatusEnum.ACTIVE).target(SaleStatusEnum.INACTIVE)
+                .event(SaleEvent.DEACTIVATE)
+                .action(deactivateAction(), errorAction())
+                .and()
+                // Active -> Active (Invalid)
+                .withExternal()
+                .source(SaleStatusEnum.ACTIVE).target(SaleStatusEnum.ACTIVE)
+                .event(SaleEvent.ACTIVATE)
+                .action(invalidTransition(), errorAction())
+                .and()
+                // Inactive -> Inactive (Invalid)
+                .withExternal()
+                .source(SaleStatusEnum.INACTIVE).target(SaleStatusEnum.INACTIVE)
+                .event(SaleEvent.DEACTIVATE)
+                .action(invalidTransition(), errorAction());
     }
 
     // Actions
@@ -54,8 +71,10 @@ public class SaleStateMachineConfig extends EnumStateMachineConfigurerAdapter<Sa
                 inventoryClient
                         .updateProductPrices(
                                 new PriceUpdateRequest(sale.getProductIds(), sale.getDiscountPercentage()));
-            } catch (Exception e) {
+            } catch (FeignException e) {
                 throw new ClientException(ErrorMessage.INVENTORY_SERVICE_CONNECTION_ERROR);
+            } catch (Exception e) {
+                throw new ClientException(e.getMessage());
             }
         };
     }
@@ -69,15 +88,23 @@ public class SaleStateMachineConfig extends EnumStateMachineConfigurerAdapter<Sa
             try {
                 // 100% percentage to disable sale
                 inventoryClient.updateProductPrices(new PriceUpdateRequest(sale.getProductIds(), 1.0f));
-            } catch (Exception e) {
+            } catch (FeignException e) {
                 throw new ClientException(ErrorMessage.INVENTORY_SERVICE_CONNECTION_ERROR);
+            } catch (Exception e) {
+                throw new ClientException(e.getMessage());
             }
         };
     }
 
-    private Action<SaleStatusEnum, SaleEvent> ErrorAction() {
+    private Action<SaleStatusEnum, SaleEvent> errorAction() {
         return context -> {
             context.getExtendedState().getVariables().put("ERROR", context.getException());
+        };
+    }
+
+    private Action<SaleStatusEnum, SaleEvent> invalidTransition() {
+        return context -> {
+            throw new StateMachineException(ErrorMessage.INVALID_STATE_TRANSITION);
         };
     }
 }

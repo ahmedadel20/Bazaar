@@ -1,4 +1,4 @@
-package org.bazaar.productCatalogue.config;
+package org.bazaar.productCatalogue.stateMachine;
 
 public class StateMachineException extends RuntimeException {
     private String message;

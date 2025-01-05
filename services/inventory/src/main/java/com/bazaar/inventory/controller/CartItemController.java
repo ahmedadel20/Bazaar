@@ -1,11 +1,10 @@
 package com.bazaar.inventory.controller;
 
 import com.bazaar.inventory.dto.CartItemMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import com.bazaar.inventory.dto.CartItemDto;
 import com.bazaar.inventory.service.CartItemServiceImpl;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,9 +16,9 @@ public class CartItemController {
     private final CartItemServiceImpl cartItemService;
     private final CartItemMapper cartItemMapper;
 
-    @PostMapping()
+    @PostMapping
     @ResponseBody
-    public CartItemDto addItem(@RequestBody CartItemDto request) {
+    public CartItemDto addItem(@RequestBody @Valid CartItemDto request) {
         return cartItemMapper.toCartItemDto(cartItemService.addItem(cartItemMapper.toCartItem(request)));
     }
 
@@ -29,10 +28,10 @@ public class CartItemController {
         return cartItemService.removeItem(cartItemId);
     }
 
-    @PostMapping("/{cartItemId}")
+    @PutMapping
     @ResponseBody
-    public CartItemDto updateItem(@PathVariable Long cartItemId, @RequestBody CartItemDto request) {
-        return cartItemMapper.toCartItemDto(cartItemService.updateItem(cartItemId, cartItemMapper.toCartItem(request)));
+    public CartItemDto updateItem(@RequestBody @Valid CartItemDto request) {
+        return cartItemMapper.toCartItemDto(cartItemService.updateItem(cartItemMapper.toCartItem(request)));
     }
 
     @GetMapping("/{cartItemId}")
@@ -52,10 +51,10 @@ public class CartItemController {
     @GetMapping("/user-id/{userId}")
     @ResponseBody
     public List<CartItemDto> getCart(@PathVariable Long userId) {
-        //Long bazaarUserId = getCurrentBazaarUserId(); // Extract userId from JWT
+        // Long bazaarUserId = getCurrentBazaarUserId(); // Extract userId from JWT
 
-        //Only for testing
-//        Long bazaarUserId = 1L;
+        // Only for testing
+        // Long bazaarUserId = 1L;
         return cartItemService.getCart(userId)
                 .stream()
                 .map(cartItemMapper::toCartItemDto)
@@ -65,10 +64,11 @@ public class CartItemController {
     @DeleteMapping("/user-id/{userId}")
     @ResponseBody
     public String clearCart(@PathVariable Long userId) {
-//        Long userId = getCurrentBazaarUserId(); // Extract userId from JWT
+        // Long userId = getCurrentBazaarUserId(); // Extract userId from JWT
         return cartItemService.clearCart(userId);
     }
 
+    // FIXME: Complete method
     // Method to extract userId from JWT
     private Long getCurrentBazaarUserId() {
         // Implementation as shown earlier

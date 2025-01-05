@@ -1,5 +1,5 @@
 package com.bazaar.inventory.controller;
-import com.bazaar.inventory.dto.CategoryMapper;
+
 import com.bazaar.inventory.dto.ProductDto;
 import com.bazaar.inventory.dto.ProductMapper;
 import com.bazaar.inventory.service.ProductServiceImpl;
@@ -17,7 +17,6 @@ import java.util.Map;
 public class ProductsController {
     private ProductServiceImpl productService;
     private ProductMapper productMapper;
-    private CategoryMapper categoryMapper;
 
     @GetMapping()
     @ResponseBody
@@ -37,7 +36,7 @@ public class ProductsController {
 
     @GetMapping("/bycategories")
     @ResponseBody
-    public List<ProductDto> getProductById(@RequestBody List<Long> categoryIds) {
+    public List<ProductDto> getProductsByCategories(@RequestBody List<Long> categoryIds) {
         return productService
                 .getProductsByCategories(categoryIds)
                 .stream()

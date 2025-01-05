@@ -1,6 +1,5 @@
 package com.bazaar.inventory.dto;
 
-import com.bazaar.inventory.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import com.bazaar.inventory.entity.CartItem;
