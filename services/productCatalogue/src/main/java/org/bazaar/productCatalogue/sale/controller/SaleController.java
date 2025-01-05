@@ -9,6 +9,7 @@ import org.bazaar.productCatalogue.sale.entity.Sale;
 import org.bazaar.productCatalogue.sale.service.SaleService;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
+@Tag(name = "Product Catalogue", description = "Controller for handling mappings for product catalogue.")
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/sale")

@@ -15,21 +15,27 @@ public record ProductDto(
                 @Min(value = 1)
                 @Schema(requiredProperties = {"Must be positive integer"})
                 Long id,
+
                 @Valid
                 @Schema(requiredProperties = {"Can't be null"})
                 CategoryDto categoryDto,
+
                 @NotBlank
                 @Schema(requiredProperties = {"Can't be blank"})
                 String name,
+
                 @Positive
                 @Schema(requiredProperties = {"Must be positive integer"})
                 BigDecimal originalPrice,
+                
                 @Positive
                 @Schema(requiredProperties = {"Must be positive integer"})
                 BigDecimal currentPrice,
+
                 @Positive
                 @Schema(requiredProperties = {"Must be positive integer"})
                 Long quantity,
+                
                 @PastOrPresent
                 @Schema(requiredProperties = {"Can't be in the future"})
                 Timestamp lastUpdated) {

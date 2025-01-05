@@ -70,14 +70,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public String updateProductsPrices(List<Long> productIDs, Double discount) {
+    public String updateProductsPrices(List<Long> productIDs, float discount) {
         List<Product> products = getProductsByIds(productIDs);
         products.forEach(
                 p -> {
                     p.setCurrentPrice(
-                            p.getOriginalPrice()
-                                    .divide(BigDecimal.valueOf(100))
-                                    .multiply(BigDecimal.valueOf(100 - discount)));
+                            p.getOriginalPrice().multiply(BigDecimal.valueOf(1.0f - discount)));
                     productRepo.save(p);
                 });
         return "%.2f DISCOUNT APPLIED".formatted(discount);
