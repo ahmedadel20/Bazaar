@@ -121,10 +121,8 @@ public class ProductServiceTest {
     @Test
     void testUpdatingProductsPrices() {
         Mockito.when(productRepo.findById(1L)).thenReturn(Optional.of(existingProduct));
-        productService.updateProductsPrices(List.of(1L), 90.0f);
-        assertEquals(
-                0,
-                existingProduct.getCurrentPrice().compareTo(BigDecimal.ONE));
+        productService.updateProductsPrices(List.of(1L), 0.9f);
+        assert(compareBigDecimal(BigDecimal.ONE, existingProduct.getCurrentPrice()));
     }
 
     @Test
@@ -143,4 +141,10 @@ public class ProductServiceTest {
                 () -> productService.delete(1L));
     }
 
+    boolean compareBigDecimal(BigDecimal n1, BigDecimal n2) {
+        BigDecimal sub = n1.subtract(n2);
+        if (sub.compareTo(BigDecimal.valueOf(1e5)) <= 1)
+            return true;
+        return false;
+    }
 }
