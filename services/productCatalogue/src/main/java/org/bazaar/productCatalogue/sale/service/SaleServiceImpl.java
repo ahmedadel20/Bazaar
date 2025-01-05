@@ -198,11 +198,11 @@ public class SaleServiceImpl implements SaleService {
         stateMachine.getExtendedState().getVariables().put("sale", sale);
 
         // Process the event
-        Message<SaleEvent> message = new GenericMessage<SaleEvent>(event);
+        Message<SaleEvent> message = new GenericMessage<>(event);
         StateMachineEventResult<SaleStatusEnum, SaleEvent> res = stateMachine.sendEvent(Mono.just(message)).blockLast();
 
         // Check that the event was processed successfully
-        if (res.getResultType() == ResultType.DENIED) {
+        if (res == null || res.getResultType() == ResultType.DENIED) {
             throw (RuntimeException) stateMachine.getExtendedState().getVariables().get("ERROR");
         }
 

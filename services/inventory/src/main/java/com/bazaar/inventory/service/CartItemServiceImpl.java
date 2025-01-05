@@ -90,12 +90,8 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     public CartItem getItem(Long cartItemId) {
-        // Fetch the cart item from the database
-        CartItem cartItem = cartItemRepository.findById(cartItemId)
+        return cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new CartItemNotFoundException(cartItemId));
-
-        // Build and return the final DTO using mapper
-        return cartItem;
     }
 
     public List<CartItem> getCart(Long bazaarUserId) {

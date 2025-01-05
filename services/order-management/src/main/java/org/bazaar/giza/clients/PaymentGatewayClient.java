@@ -8,5 +8,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface PaymentGatewayClient {
 
     @GetMapping()
-    public String makePayment(@RequestBody UserAccountRequest userAccountRequest);
+    String makePayment(@RequestBody UserAccountRequest userAccountRequest);
 }
