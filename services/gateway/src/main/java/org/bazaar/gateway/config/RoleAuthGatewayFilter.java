@@ -59,7 +59,6 @@ public class RoleAuthGatewayFilter extends AbstractGatewayFilterFactory<RoleAuth
             String username = jwtUtil.extractUsername(token);
             String rolesHeader = String.join(",", roles);
 
-            //FIXME Update and pass any admins through
             if (roles.contains("CUSTOMER") && !roles.contains("ADMIN")) {
 
                 //Extract the path variables from the incoming request
