@@ -36,7 +36,7 @@ public class ProductsController {
         return productMapper.toProductDTO(productService.getById(productId));
     }
 
-    @GetMapping("/bycategories")
+    @PutMapping("/bycategories")
     @ResponseBody
     public List<ProductDto> getProductsByCategories(@RequestBody List<Long> categoryIds) {
         return productService
@@ -46,7 +46,7 @@ public class ProductsController {
                 .toList();
     }
 
-    @GetMapping("/listofproducts")
+    @PutMapping("/listofproducts")
     @ResponseBody
     public List<ProductDto> getListOfProducts(@RequestBody List<Long> productIds) {
         return productService

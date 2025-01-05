@@ -59,14 +59,14 @@ public class RoleAuthGatewayFilter extends AbstractGatewayFilterFactory<RoleAuth
             String username = jwtUtil.extractUsername(token);
             String rolesHeader = String.join(",", roles);
 
-            //Extract the path variables from the incoming request
-            Map<String, String> pathParams = exchange.getAttribute(ServerWebExchangeUtils.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
-
-            //Extract the path variable {customerId} from the incoming request
-            Long customerId = Long.valueOf(pathParams.get("customerId"));
-
             //FIXME Update and pass any admins through
-            if (roles.contains("MANAGER") && !roles.contains("ADMIN")) {
+            if (roles.contains("CUSTOMER") && !roles.contains("ADMIN")) {
+
+                //Extract the path variables from the incoming request
+                Map<String, String> pathParams = exchange.getAttribute(ServerWebExchangeUtils.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+
+                //Extract the path variable {customerId} from the incoming request
+                Long customerId = Long.valueOf(pathParams.get("customerId"));
 
                 if (!bazaarUserId.equals(customerId)) { // Ownership validation
                     return onError(exchange, "Forbidden - Access Denied", HttpStatus.FORBIDDEN);

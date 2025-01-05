@@ -21,11 +21,10 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final InventoryClient inventoryClient;
-    private Long currentBazaarUserId = 1L;
 
     @Override
     @Transactional
-    public Order create(Order order) {
+    public Order create(Order order, Long customerId) {
         if (orderRepository.findById(order.getId()).isPresent()) {
             throw new DuplicateOrderException(order.getId());
         }
@@ -33,7 +32,7 @@ public class OrderServiceImpl implements OrderService {
         order.setId(null);
 
         // Retrieve cart items for the user
-        List<CartItemResponse> cartItemResponses = inventoryClient.getCart(currentBazaarUserId).getBody();
+        List<CartItemResponse> cartItemResponses = inventoryClient.getCart(customerId).getBody();
         if (cartItemResponses == null)
             throw new InventoryNotAvailableException();
         if (cartItemResponses.isEmpty())
@@ -54,7 +53,7 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
 
         // Clear the cart once the order is placed
-        String cartCleared = inventoryClient.clearCart(currentBazaarUserId).getBody();
+        String cartCleared = inventoryClient.clearCart(customerId).getBody();
         if (cartCleared == null)
             throw new InventoryNotAvailableException();
 

@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EnableFeignClients()
+@EnableFeignClients("org.bazaar.giza.clients")
 public class OrderManagementApplication {
 
 	public static void main(String[] args) {

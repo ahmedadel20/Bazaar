@@ -1,11 +1,13 @@
 package com.bazaar.inventory.service;
 
-import com.bazaar.inventory.entity.Product;
-import lombok.RequiredArgsConstructor;
+import com.bazaar.inventory.clients.CustomerResponse;
+import com.bazaar.inventory.clients.UserManagementClient;
+import com.bazaar.inventory.dto.NotificationDto;
 import com.bazaar.inventory.entity.CartItem;
+import com.bazaar.inventory.entity.Product;
 import com.bazaar.inventory.exception.CartItemNotFoundException;
 import com.bazaar.inventory.repo.CartItemRepository;
-import com.bazaar.inventory.dto.NotificationDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class CartItemServiceImpl implements CartItemService {
     private final CartItemRepository cartItemRepository;
     private final ProductService productService;
     private final RabbitTemplate rabbitTemplate;
+    private final UserManagementClient userManagementClient;
 
     @Transactional
     public CartItem addItem(CartItem cartItem) {
@@ -69,8 +72,7 @@ public class CartItemServiceImpl implements CartItemService {
 
         NotificationDto notificationDto = NotificationDto.builder()
 
-                // TODO: get email from jwt token
-                .recipient("abdalla.maged95@gmail.com") // Replace with actual user email
+                .recipient(getUserEmail(cartItem.getBazaarUserId()))
                 .subject(product.getName() + " has been updated in your cart")
                 .body("Your cart has been updated with product: " + product.getName())
                 .sentAt(Instant.now())
@@ -107,5 +109,10 @@ public class CartItemServiceImpl implements CartItemService {
 
         cartItem.setQuantity(quantity);
         return cartItemRepository.save(cartItem);
+    }
+
+    public String getUserEmail(Long customerId) {
+        CustomerResponse customerResponse = userManagementClient.getSingleCustomer(customerId);
+        return customerResponse.email();
     }
 }

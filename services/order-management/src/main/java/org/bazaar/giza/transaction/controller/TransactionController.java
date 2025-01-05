@@ -15,7 +15,7 @@ import java.util.List;
 @Tag(name = "Transactions", description = "Controller for handling mappings for transactions.")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/transaction")
+@RequestMapping("/api/v1/{customerId}/transaction")
 public class TransactionController {
 
     private final TransactionServiceImpl transactionService;
@@ -61,4 +61,6 @@ public class TransactionController {
                 .map(transactionMapper::toTransactionResponse)
                 .toList();
     }
+
+
 }

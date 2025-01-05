@@ -13,7 +13,7 @@ import java.util.List;
 @Tag(name = "CartItems", description = "Controller for handling mappings for cart items")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/cart-items")
+@RequestMapping("/api/v1/{customerId}/cart-items")
 public class CartItemController {
     private final CartItemServiceImpl cartItemService;
     private final CartItemMapper cartItemMapper;
@@ -50,23 +50,23 @@ public class CartItemController {
         return cartItemMapper.toCartItemDto(cartItemService.updateItemQuantity(cartItemId, quantity));
     }
 
-    @GetMapping("/user-id/{userId}")
+    @GetMapping()
     @ResponseBody
-    public List<CartItemDto> getCart(@PathVariable Long userId) {
+    public List<CartItemDto> getCart(@PathVariable Long customerId) {
         // Long bazaarUserId = getCurrentBazaarUserId(); // Extract userId from JWT
 
         // Only for testing
         // Long bazaarUserId = 1L;
-        return cartItemService.getCart(userId)
+        return cartItemService.getCart(customerId)
                 .stream()
                 .map(cartItemMapper::toCartItemDto)
                 .toList();
     }
 
-    @DeleteMapping("/user-id/{userId}")
+    @DeleteMapping()
     @ResponseBody
-    public String clearCart(@PathVariable Long userId) {
+    public String clearCart(@PathVariable Long customerId) {
         // Long userId = getCurrentBazaarUserId(); // Extract userId from JWT
-        return cartItemService.clearCart(userId);
+        return cartItemService.clearCart(customerId);
     }
 }

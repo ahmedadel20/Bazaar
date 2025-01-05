@@ -1,21 +1,13 @@
 package org.bazaar.productCatalogue.sale.service;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.bazaar.productCatalogue.sale.dto.SaleMapper;
+import feign.FeignException;
+import lombok.AllArgsConstructor;
 import org.bazaar.productCatalogue.client.ClientException;
 import org.bazaar.productCatalogue.client.InventoryClient;
 import org.bazaar.productCatalogue.constant.ErrorMessage;
 import org.bazaar.productCatalogue.enums.SaleEvent;
 import org.bazaar.productCatalogue.enums.SaleStatusEnum;
-import org.bazaar.productCatalogue.sale.dto.ProductResponse;
-import org.bazaar.productCatalogue.sale.dto.SaleCreateRequest;
-import org.bazaar.productCatalogue.sale.dto.SaleResponse;
-import org.bazaar.productCatalogue.sale.dto.SaleUpdateRequest;
+import org.bazaar.productCatalogue.sale.dto.*;
 import org.bazaar.productCatalogue.sale.entity.Sale;
 import org.bazaar.productCatalogue.sale.exception.SaleException;
 import org.bazaar.productCatalogue.sale.repo.SaleRepo;
@@ -29,10 +21,13 @@ import org.springframework.statemachine.StateMachineEventResult.ResultType;
 import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
-
-import feign.FeignException;
-import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
+
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -93,7 +88,7 @@ public class SaleServiceImpl implements SaleService {
         List<Sale> sales = repo.findAll();
 
         for (Sale sale : sales) {
-            saleResponses.add(mapper.toSaleResponse(sale, null));
+            saleResponses.add(mapper.toSaleResponse(sale, inventoryClient.getProductsByCategories(sale.getCategoryIds())));
         }
 
         return saleResponses;

@@ -1,5 +1,6 @@
 package org.bazaar.giza.order.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bazaar.giza.order.dto.OrderRequest;
 import org.bazaar.giza.order.dto.OrderResponse;
@@ -15,7 +16,7 @@ import java.util.List;
 @Tag(name = "Orders", description = "Controller for handling mappings for Orders")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/order")
+@RequestMapping("/api/v1/{customerId}/order")
 public class OrderController {
 
     private final OrderService orderService;
@@ -23,12 +24,12 @@ public class OrderController {
     @PostMapping
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderResponse create(@RequestBody OrderRequest orderRequest) {
-        return orderMapper.toOrderResponse(orderService.create(orderMapper.toOrder(orderRequest)));
+    public OrderResponse create(@Valid @RequestBody OrderRequest orderRequest, @PathVariable Long customerId) {
+        return orderMapper.toOrderResponse(orderService.create(orderMapper.toOrder(orderRequest), customerId));
     }
 
     @DeleteMapping("/{orderId}")
-    public ResponseEntity<String> delete(@PathVariable Long orderId) {
+    public ResponseEntity<String> delete(@Valid @PathVariable Long orderId) {
         return new ResponseEntity<>(orderService.delete(orderId), HttpStatus.OK);
     }
 
@@ -42,16 +43,11 @@ public class OrderController {
     @GetMapping
     @ResponseBody
     @ResponseStatus(HttpStatus.FOUND)
-    public List<OrderResponse> getAllByBazaarUserId() {
-        Long bazaarUserId = getCurrentBazaarUserId();
-        return orderService.getAllByBazaarUserId(bazaarUserId)
+    public List<OrderResponse> getAllByBazaarUserId(@PathVariable Long customerId) {
+        return orderService.getAllByBazaarUserId(customerId)
                 .stream()
                 .map(orderMapper::toOrderResponse)
                 .toList();
     }
 
-    private Long getCurrentBazaarUserId() {
-        // Implementation as shown earlier
-        return 1L;
-    }
 }
