@@ -6,7 +6,6 @@ import com.bazaar.inventory.exception.CategoryDuplicateNameException;
 import com.bazaar.inventory.exception.CategoryInUseException;
 import com.bazaar.inventory.exception.CategoryNotFoundException;
 import com.bazaar.inventory.repo.CategoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,6 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryRepository categoryRepo;
     private ProductService productService;
 
-    @Autowired
     public CategoryServiceImpl(@Lazy ProductService productService, CategoryRepository categoryRepo) {
         this.productService = productService;
         this.categoryRepo = categoryRepo;

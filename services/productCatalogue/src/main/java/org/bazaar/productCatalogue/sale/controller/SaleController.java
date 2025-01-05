@@ -50,13 +50,11 @@ public class SaleController {
         return saleService.deleteSale(id);
     }
 
-    // FIXME: Remove before production
     @PutMapping("/test/activate/{id}")
     public Sale testActivate(@PathVariable Long id) {
         return saleService.testActivate(id);
     }
 
-    // FIXME: Remove before production
     @PutMapping("/test/deactivate/{id}")
     public Sale testDeactivate(@PathVariable Long id) {
         return saleService.testDeactivate(id);
