@@ -40,7 +40,7 @@ public class SecurityConfig {
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/api/v1/auth/generateToken", "/api/v1/auth/registerCustomer",
-                                "/swagger-ui/**", "/api-docs/**", "/h2-console/**", "/book/**")
+                                "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**", "/book/**")
                         .permitAll())
                 .authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
                 .sessionManagement(management -> management

@@ -1,6 +1,7 @@
 package com.bazaar.inventory.controller;
 
 import com.bazaar.inventory.dto.CartItemMapper;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import com.bazaar.inventory.dto.CartItemDto;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "CartItems", description = "Controller for handling mappings for cart items")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/cart-items")

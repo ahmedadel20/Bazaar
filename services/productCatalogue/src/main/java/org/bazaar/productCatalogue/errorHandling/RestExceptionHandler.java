@@ -23,6 +23,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import io.swagger.v3.oas.annotations.Hidden;
+
+@Hidden
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 

@@ -9,8 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.util.List;
+@Tag(name = "Orders", description = "Controller for handling mappings for Orders")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/order")

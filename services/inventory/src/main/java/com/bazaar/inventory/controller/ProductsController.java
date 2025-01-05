@@ -1,16 +1,18 @@
 package com.bazaar.inventory.controller;
 
+import com.bazaar.inventory.dto.PriceUpdateRequest;
 import com.bazaar.inventory.dto.ProductDto;
 import com.bazaar.inventory.dto.ProductMapper;
 import com.bazaar.inventory.service.ProductServiceImpl;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
+@Tag(name = "Products", description = "Controller for handling mappings for products")
 @Controller
 @RequestMapping("/api/v1/products")
 @AllArgsConstructor
@@ -66,12 +68,11 @@ public class ProductsController {
         return productMapper.toProductDTO(productService.update(productMapper.toProduct(productDto)));
     }
 
-    @PutMapping("/applydiscount")
+    @PutMapping("/updateprices")
     @ResponseBody
-    public String updateProductsPrices(@RequestBody Map<String, Object> map) {
-        @SuppressWarnings("unchecked")
-        List<Long> productsIDs = ((List<Integer>) map.get("products")).stream().map(n -> Long.valueOf(n)).toList();
-        Double discount = (Double) map.get("discount");
+    public String updateProductsPrices(@RequestBody PriceUpdateRequest priceUpdateRequest) {
+        List<Long> productsIDs = priceUpdateRequest.productIds();
+        float discount = priceUpdateRequest.discountPercentage();
         return productService.updateProductsPrices(productsIDs, discount);
     }
 

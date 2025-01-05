@@ -11,3 +11,4 @@ public record ProductResponse(Long id,
         Timestamp lastUpdated) {
 
 }
+

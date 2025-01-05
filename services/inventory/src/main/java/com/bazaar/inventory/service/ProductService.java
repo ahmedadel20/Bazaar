@@ -13,6 +13,6 @@ public interface ProductService {
     List<Product> getProductsByIds(List<Long> productIds);
     Product create(Product product);
     Product update(Product product);
-    String updateProductsPrices(List<Long> productIDs, Double discount);
+    String updateProductsPrices(List<Long> productIDs, float discount);
     String delete(Long id);
 }
