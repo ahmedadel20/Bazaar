@@ -2,6 +2,7 @@ package com.bazaar.inventory.controller;
 import com.bazaar.inventory.dto.CategoryDto;
 import com.bazaar.inventory.dto.CategoryMapper;
 import com.bazaar.inventory.service.CategoryServiceImpl;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Categories", description = "Controller for handling mappings for product categories")
 @Controller
 @RequestMapping("/api/v1/categories")
 @AllArgsConstructor
