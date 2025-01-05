@@ -51,8 +51,8 @@ public class SaleMapper {
     public SaleProduct toProductResponse(ProductResponse productResponse) {
         SaleProduct saleProduct = SaleProduct.builder()
                 .name(productResponse.name())
-                .category(productResponse.category())
-                .originalPrice(productResponse.price())
+                .category(productResponse.categoryDto().name())
+                .originalPrice(productResponse.originalPrice())
                 .build();
 
         return saleProduct;

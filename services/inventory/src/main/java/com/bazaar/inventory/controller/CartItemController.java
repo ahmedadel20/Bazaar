@@ -67,11 +67,4 @@ public class CartItemController {
         // Long userId = getCurrentBazaarUserId(); // Extract userId from JWT
         return cartItemService.clearCart(userId);
     }
-
-    // FIXME: Complete method
-    // Method to extract userId from JWT
-    private Long getCurrentBazaarUserId() {
-        // Implementation as shown earlier
-        return null;
-    }
 }

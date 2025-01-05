@@ -1,10 +1,12 @@
 package org.bazaar.productCatalogue.sale.dto;
 
+import java.math.BigDecimal;
+
 import lombok.Builder;
 
 @Builder
 public record SaleProduct(String name,
-                Double originalPrice,
+                BigDecimal originalPrice,
                 String category) {
 
 }

@@ -69,6 +69,7 @@ public class ProductsController {
     @PutMapping("/applydiscount")
     @ResponseBody
     public String updateProductsPrices(@RequestBody Map<String, Object> map) {
+        @SuppressWarnings("unchecked")
         List<Long> productsIDs = ((List<Integer>) map.get("products")).stream().map(n -> Long.valueOf(n)).toList();
         Double discount = (Double) map.get("discount");
         return productService.updateProductsPrices(productsIDs, discount);

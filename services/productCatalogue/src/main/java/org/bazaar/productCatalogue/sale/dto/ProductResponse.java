@@ -1,13 +1,13 @@
 package org.bazaar.productCatalogue.sale.dto;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
-
-// FIXME: Update to conform to the return from Inventory Service
 public record ProductResponse(Long id,
-                String category,
-                String name,
-                Double price,
-                Long quantity,
-                Timestamp lastUpdated) {
+        CategoryDto categoryDto,
+        String name,
+        BigDecimal originalPrice,
+        BigDecimal currentPrice,
+        Long quantity,
+        Timestamp lastUpdated) {
 
 }

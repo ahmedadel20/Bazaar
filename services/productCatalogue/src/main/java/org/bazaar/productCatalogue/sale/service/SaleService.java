@@ -21,10 +21,8 @@ public interface SaleService {
 
     void deactivateSales();
 
-    // FIXME: Remove before production
     Sale testActivate(Long id);
 
-    // FIXME: Remove before production
     Sale testDeactivate(Long id);
 
     String deleteSale(Long id);

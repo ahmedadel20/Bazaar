@@ -21,7 +21,6 @@ public interface InventoryClient {
     @GetMapping("/api/v1/products/listofproducts")
     List<ProductResponse> getProductsById(@RequestBody List<Long> productIds);
 
-    // FIXME: Update url and method name
     @PutMapping("/api/v1/products/updateprices")
     void updateProductPrices(@RequestBody PriceUpdateRequest priceUpdateRequest);
 }
