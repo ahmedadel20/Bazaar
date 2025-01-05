@@ -27,7 +27,6 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class ProductServiceTest {
@@ -59,7 +58,6 @@ public class ProductServiceTest {
 
     }
 
-
     @Test
     void testFindingProduct() {
         Mockito.when(productRepo.findById(1L)).thenReturn(Optional.of(existingProduct));
@@ -73,8 +71,7 @@ public class ProductServiceTest {
         Mockito.when(productRepo.findById(1L)).thenReturn(Optional.empty());
         assertThrows(
                 ProductNotFoundException.class,
-                () -> productService.getById(1L)
-        );
+                () -> productService.getById(1L));
     }
 
     @Test
@@ -103,8 +100,7 @@ public class ProductServiceTest {
         Mockito.doThrow(CategoryNotFoundException.class).when(categoryService).getById(1L);
         assertThrows(
                 CategoryNotFoundException.class,
-                () -> productService.create(existingProduct)
-        );
+                () -> productService.create(existingProduct));
     }
 
     @Test
@@ -119,18 +115,16 @@ public class ProductServiceTest {
         Mockito.when(productRepo.findById(1L)).thenReturn(Optional.empty());
         assertThrows(
                 ProductNotFoundException.class,
-                () -> productService.update(existingProduct)
-        );
+                () -> productService.update(existingProduct));
     }
 
     @Test
     void testUpdatingProductsPrices() {
         Mockito.when(productRepo.findById(1L)).thenReturn(Optional.of(existingProduct));
-        productService.updateProductsPrices(List.of(1L), 90.0);
+        productService.updateProductsPrices(List.of(1L), 90.0f);
         assertEquals(
                 0,
-                existingProduct.getCurrentPrice().compareTo(BigDecimal.ONE)
-        );
+                existingProduct.getCurrentPrice().compareTo(BigDecimal.ONE));
     }
 
     @Test
@@ -138,8 +132,7 @@ public class ProductServiceTest {
         Mockito.when(productRepo.findById(1L)).thenReturn(Optional.of(existingProduct));
         assertEquals(
                 "PRODUCT DELETED",
-                productService.delete(1L)
-        );
+                productService.delete(1L));
     }
 
     @Test
@@ -147,8 +140,7 @@ public class ProductServiceTest {
         Mockito.when(productRepo.findById(1L)).thenReturn(Optional.empty());
         assertThrows(
                 ProductNotFoundException.class,
-                () -> productService.delete(1L)
-        );
+                () -> productService.delete(1L));
     }
 
 }
