@@ -1,4 +1,4 @@
-package com.bazaar.inventory;
+package org.bazaar.giza;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -14,12 +14,13 @@ import io.swagger.v3.oas.annotations.servers.Server;
 )
 @OpenAPIDefinition(
         info = @Info(
-                title = "Bazaar - Inventory",
-                description = "OpenAPI documentation for Inventory Service."
+                title = "Bazaar - Order Management",
+                description = "OpenAPI documentation for Order Management Service."
                         + "\n\n Authorization is done through Jwt bearer tokens."
                         + "\n\n NOTE: Admins have the authority to access any mapping.",
                 version = "1.0"
         ),
-        servers = @Server(url = "http://localhost:8083/", description = "Dev ENV"))
+        servers = @Server(url = "http://localhost:8082/", description = "Dev ENV"))
 public class OpenApiConfig {
+
 }

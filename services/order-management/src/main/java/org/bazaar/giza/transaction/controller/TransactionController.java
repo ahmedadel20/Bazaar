@@ -8,8 +8,11 @@ import org.bazaar.giza.transaction.service.TransactionServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
 
+@Tag(name = "Transactions", description = "Controller for handling mappings for transactions.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/transaction")
